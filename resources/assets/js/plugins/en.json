@@ -839,12 +839,12 @@
     }
   },
   "layout_login": {
-    "copyright_crater": "Copyright @ Crater - 2019",
-    "super_simple_invoicing": "Super Simple Invoicing",
-    "for_freelancer": "for Freelancers &",
-    "small_businesses": "Small Businesses ",
-    "crater_help": "Crater helps you track expenses, record payments & generate beautiful",
-    "invoices_and_estimates": "invoices & estimates with ability to choose multiple templates."
+    "copyright_crater": "Copyright @ AceLords - 2020",
+    "super_simple_invoicing": "AceLords Invoicing SaaS",
+    "for_freelancer": "for AceLords' clients &",
+    "small_businesses": "potential customers",
+    "crater_help": "Expenses, record payments & beautiful invoices generator",
+    "invoices_and_estimates": "& estimates tracking with ability to choose multiple templates."
   },
   "validation": {
     "invalid_url": "Invalid url (ex: http://www.crater.com)",

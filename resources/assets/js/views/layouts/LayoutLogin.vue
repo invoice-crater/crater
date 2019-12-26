@@ -3,11 +3,13 @@
     <div class="site-wrapper">
       <div class="login-box">
         <div class="box-wrapper">
-          <div class="logo-main">
+          <div class="logo-main text-center">
             <a href="/admin">
               <img
-                src="/assets/img/crater-logo.png"
-                alt="Crater Logo">
+                src="/logos/logo-icon.png"
+                alt="AceLords Logo"
+                class="hidden-sm-and-up"
+                >
             </a>
           </div>
           <router-view></router-view>

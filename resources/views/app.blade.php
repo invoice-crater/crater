@@ -14,7 +14,7 @@
     <link rel="shortcut icon" href="/assets/img/favicons/favicon.ico">
     <meta name="msapplication-TileColor" content="#ffffff">
     <meta name="msapplication-config" content="/assets/img/favicons/browserconfig.xml">
-    <meta name="theme-color" content="#ffffff">
+    <meta name="theme-color" content="#9b51e0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 </head>
 <body class="layout-default skin-crater">

@@ -13,3 +13,9 @@ Homestead.yaml
 /.vscode
 docker-compose.yml
 docker-compose.yaml
+
+.DS_Store
+public/.DS_Store
+public/assets/.DS_Store
+public/assets/img/.DS_Store
+public/logos/.DS_Store
