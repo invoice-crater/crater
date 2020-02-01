@@ -14,13 +14,18 @@ class UsersTableSeeder extends Seeder
      */
     public function run()
     {
-        User::create([
-            'email' => 'admin@craterapp.com',
-            'name' => 'Jane Doe',
-            'role' => 'admin',
-            'password' => Hash::make('crater@123')
-        ]);
+        try {
+            User::create([
+                'email' => 'admin@craterapp.com',
+                'name' => 'Jane Doe',
+                'role' => 'admin',
+                'password' => Hash::make('crater@123')
+            ]);
+        } catch (Exception $e) {}
 
-        Setting::setSetting('profile_complete', 0);
+        try {
+            Setting::setSetting('profile_complete', 0);
+        } catch (Exception $e) {}
+
     }
 }
