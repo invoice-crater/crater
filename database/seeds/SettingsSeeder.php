@@ -24,13 +24,13 @@ class SettingsSeeder extends Seeder
         $address = Address::create(['user_id' => $user->id, 'country_id' => 1]);
 
         $sets = [
-            'currency'           => 1,
-            'time_zone'          => 'UTC',
-            'language'           => 'en',
-            'notification_email' =>  $user->email,
-            'fiscal_year'        => '1-12',
-            'carbon_date_format' => 'd m Y',
-            'moment_date_format' => 'DD MMM YYYY'
+            'currency'                      => 1,
+            'time_zone'                     => 'UTC',
+            'language'                      => 'en',
+            'notification_email'            =>  $user->email,
+            'fiscal_year'                   => '1-12',
+            'carbon_date_format'            => 'd m Y',
+            'moment_date_format'            => 'DD MMM YYYY',
         ];
 
         foreach ($sets as $key => $value) {

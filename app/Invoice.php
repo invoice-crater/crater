@@ -33,6 +33,7 @@ class Invoice extends Model
         'sub_total' => 'integer',
         'discount' => 'float',
         'discount_val' => 'integer',
+        'display_due_amount' => 'boolean',
     ];
 
     protected $fillable = [
@@ -57,7 +58,8 @@ class Invoice extends Model
         'notes',
         'unique_hash',
         'sent',
-        'viewed'
+        'viewed',
+        'display_due_amount',
     ];
 
     protected $appends = [

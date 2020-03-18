@@ -239,6 +239,14 @@
           <base-button type="button" class="btn-template" icon="pencil-alt" right-icon @click="openTemplateModal" >
             <span class="mr-4"> {{ $t('invoices.template') }} {{ getTemplateId }} </span>
           </base-button>
+
+          <div class="d-flex align-items-center mt-5">
+              <base-switch
+                v-model="newInvoice.display_due_amount"
+                class="btn-switch"
+              />
+            <div class="ml-2">{{ $t('invoices.display_due_amount') }}</div>
+          </div>
         </div>
 
         <div class="invoice-total">
@@ -368,7 +376,8 @@ export default {
           id: Guid.raw(),
           taxes: [{...TaxStub, id: Guid.raw()}]
         }],
-        taxes: []
+        taxes: [],
+        display_due_amount: false
       },
       customers: [],
       itemList: [],

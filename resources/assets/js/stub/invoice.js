@@ -14,5 +14,6 @@ export default {
   totalSimpleTax: 0,
   totalCompoundTax: 0,
   tax: 0,
-  taxes: []
+  taxes: [],
+  display_due_amount: false
 }

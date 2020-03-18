@@ -352,7 +352,8 @@
     "marked_as_sent_message": "Fatura marcada como enviada com sucesso",
     "user_email_does_not_exist": "O email do usuário não existe",
     "something_went_wrong": "Algo deu errado",
-    "invalid_due_amount_message": "O valor total da fatura não pode ser menor que o valor total pago para esta fatura. Atualize a fatura ou exclua os pagamentos associados para continuar."
+    "invalid_due_amount_message": "O valor total da fatura não pode ser menor que o valor total pago para esta fatura. Atualize a fatura ou exclua os pagamentos associados para continuar.",
+    "display_due_amount": "Display Due Amount in Invoice Printout?"
   },
   "credit_notes": {
     "title": "Notas de credito",

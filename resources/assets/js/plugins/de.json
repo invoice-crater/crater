@@ -321,6 +321,7 @@
     "due_date": "Fälligkeit",
     "edit_invoice": "Rechnung bearbeiten",
     "invalid_due_amount_message": "Der Gesamtrechnungsbetrag darf nicht kleiner sein als der für diese Rechnung bezahlte Gesamtbetrag. Bitte aktualisieren Sie die Rechnung oder löschen Sie die zugehörigen Zahlungen um fortzufahren.",
+    "display_due_amount": "Display Due Amount in Invoice Printout?",
     "invoice": "Rechnung | Rechnungen",
     "invoice_date": "Rechnungsdatum",
     "invoice_mark_as_sent": "Diese Rechnung wird als gesendet markiert",

@@ -362,7 +362,8 @@
     "marked_as_sent_message": "Invoice marked as sent successfully",
     "user_email_does_not_exist": "User email does not exist",
     "something_went_wrong": "something went wrong",
-    "invalid_due_amount_message": "Total Invoice amount cannot be less than total paid amount for this Invoice. Please update the invoice or delete the associated payments to continue."
+    "invalid_due_amount_message": "Total Invoice amount cannot be less than total paid amount for this Invoice. Please update the invoice or delete the associated payments to continue.",
+    "display_due_amount": "Display Due Amount in Invoice Printout?"
   },
   "credit_notes": {
     "title": "Credit Notes",

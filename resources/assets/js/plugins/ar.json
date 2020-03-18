@@ -352,7 +352,8 @@
     "marked_as_sent_message": "تم إرسال الفاتورة بنجاح",
     "user_email_does_not_exist": "البريد الإلكتروني للمستخدم غير موجود!",
     "something_went_wrong": "خطأ غير معروف!",
-    "invalid_due_amount_message": "المبلغ النهائي للفاتورة لا يمكن أن يكون أقل من المبلغ المطلوب لها. رجاءاً حدث الفاتورة أو قم بحذف المدفوعات المرتبطة بها للاستمرار."
+    "invalid_due_amount_message": "المبلغ النهائي للفاتورة لا يمكن أن يكون أقل من المبلغ المطلوب لها. رجاءاً حدث الفاتورة أو قم بحذف المدفوعات المرتبطة بها للاستمرار.",
+    "display_due_amount": "Display Due Amount in Invoice Printout?"
   },
   "credit_notes": {
     "title": "ملاحظات إئتمانية",

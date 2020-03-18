@@ -349,7 +349,8 @@
     "updated_message": "Facture mise à jour avec succès",
     "deleted_message": "La Facture a été supprimée ! | Les Factures ont été supprimées !",
     "marked_as_sent_message": "Facture supprimée avec succès | Factures supprimées avec succès",
-    "invalid_due_amount_message": "Le paiement entré est supérieur au montant total dû pour cette facture. Veuillez vérifier et réessayer"
+    "invalid_due_amount_message": "Le paiement entré est supérieur au montant total dû pour cette facture. Veuillez vérifier et réessayer",
+    "display_due_amount": "Display Due Amount in Invoice Printout?"
   },
   "credit_notes": {
     "title": "Notes de crédit",

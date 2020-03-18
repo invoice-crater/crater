@@ -351,7 +351,8 @@
     "marked_as_sent_message": "Factura marcada como enviada con éxito",
     "user_email_does_not_exist": "El email del usuario no existe",
     "something_went_wrong": "Algo fue mal",
-    "invalid_due_amount_message": "El pago ingresado es mayor que la cantidad total debida por esta factura. Por favor verificalo y vuelve a intentarlo"
+    "invalid_due_amount_message": "El pago ingresado es mayor que la cantidad total debida por esta factura. Por favor verificalo y vuelve a intentarlo",
+    "display_due_amount": "Display Due Amount in Invoice Printout?"
   },
   "credit_notes": {
     "title": "Notas de credito",

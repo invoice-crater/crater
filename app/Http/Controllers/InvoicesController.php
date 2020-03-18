@@ -133,7 +133,8 @@ class InvoicesController extends Controller
             'discount_per_item' => $discount_per_item,
             'tax' => $request->tax,
             'notes' => $request->notes,
-            'unique_hash' => str_random(60)
+            'unique_hash' => str_random(60),
+            'display_due_amount' => $request->display_due_amount,
         ]);
 
         $invoiceItems = $request->items;
@@ -292,6 +293,7 @@ class InvoicesController extends Controller
         $invoice->discount_val = $request->discount_val;
         $invoice->tax = $request->tax;
         $invoice->notes = $request->notes;
+        $invoice->display_due_amount = $request->display_due_amount;
         $invoice->save();
 
         $oldItems = $invoice->items->toArray();

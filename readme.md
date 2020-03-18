@@ -1,10 +1,12 @@
-<img src="https://res.cloudinary.com/bytefury/image/upload/v1574149856/Crater/craterframe.png">
-
+# AceLords Invoice Management System
 ## Introduction
 
-Crater is an open-source web & mobile app that helps you track expenses, payments & create professional invoices & estimates.
+AceLords Invoice Management System, a fork of Crater, is an open-source web & 
+mobile app that helps you track expenses, payments & create professional invoices 
+& estimates.
 
-Web Application is made using Laravel & VueJS while the Mobile Apps are built using React Native.
+Web Application is made using Laravel & VueJS while the Mobile Apps are 
+built using React Native.
 
 # Table of Contents
 
@@ -42,6 +44,7 @@ Join the Crater discord server to discuss:
 -   [x] Automatic Update
 -   [x] Email Configuration
 -   [x] Installation Wizard
+-   [x] Display Due Amount Option per Invoice
 -   [ ] Address Customisation & Default notes
 -   [ ] Edit Email before Sending Invoice
 -   [ ] Available as a docker image

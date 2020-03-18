@@ -132,4 +132,38 @@
             {!! format_money_pdf($invoice->total, $invoice->user->currency)!!}
         </td>
     </tr>
+
+    @if ($invoice->display_due_amount)
+        <tr>
+            <td colspan="2" style="padding-top: 20px;"><hr/></td>
+        </tr>
+        <tr>
+            <td class="no-border"
+                style="padding-left:10px; padding-bottom:10px; text-align:left; padding-top:20px; font-size:12px;"
+            >
+                <label class="total-bottom"> Paid so far </label>
+            </td>
+            <td
+                class="no-border items padd8"
+                style="padding-right:10px; font-weight: 500; text-align: right; font-size:12px;  padding-top:20px; color: green"
+            >
+                {!! format_money_pdf($invoice->total - $invoice->due_amount, $invoice->user->currency)!!}
+            </td>
+        </tr>
+
+        <tr>
+            <td class="no-border total-border-left"
+                style="padding-left:10px; padding-bottom:10px; text-align:left; padding-top:20px; font-size:12px;  color: #55547A;"
+            >
+                <label class="total-bottom"> Remaining </label>
+            </td>
+            <td
+                class="no-border total-border-right items padd8"
+                style="padding-right:10px; font-weight: 500; text-align: right; font-size:12px;  padding-top:20px; color: red"
+            >
+                {!! format_money_pdf($invoice->due_amount, $invoice->user->currency)!!}
+            </td>
+        </tr>
+    @endif
+
 </table>
