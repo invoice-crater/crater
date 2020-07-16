@@ -11,6 +11,12 @@ mix.webpackConfig({
   }
 })
 
+mix.options({
+  terser: {
+      extractComments: false,
+  }
+})
+
 /*
  |--------------------------------------------------------------------------
  | Admin

@@ -13,7 +13,7 @@ class CreateUnitsTable extends Migration
      */
     public function up()
     {
-        try {
+        if (!Schema::hasTable('units')) {
             Schema::create('units', function (Blueprint $table) {
                 $table->increments('id');
                 $table->string('name');
@@ -21,7 +21,7 @@ class CreateUnitsTable extends Migration
                 $table->foreign('company_id')->references('id')->on('companies')->onDelete('cascade');
                 $table->timestamps();
             });
-        } catch(\Exception $e) {}
+        }
     }
 
     /**

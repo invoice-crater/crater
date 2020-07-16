@@ -13,7 +13,7 @@ class CreatePaymentMethodsTable extends Migration
      */
     public function up()
     {
-        try {
+        if (!Schema::hasTable('payment_methods')) {
             Schema::create('payment_methods', function (Blueprint $table) {
                 $table->increments('id');
                 $table->string('name');
@@ -21,8 +21,7 @@ class CreatePaymentMethodsTable extends Migration
                 $table->foreign('company_id')->references('id')->on('companies')->onDelete('cascade');
                 $table->timestamps();
             });
-        } catch(\Exception $e) {}
-
+        }
     }
 
     /**
