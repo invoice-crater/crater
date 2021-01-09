@@ -4,7 +4,7 @@ namespace Crater\Console\Commands;
 
 use Illuminate\Console\Command;
 use Crater\Space\Updater;
-use Crater\Setting;
+use Crater\Models\Setting;
 
 // Implementation taken from Akaunting - https://github.com/akaunting/akaunting
 class UpdateCommand extends Command
@@ -12,6 +12,8 @@ class UpdateCommand extends Command
     public $installed;
 
     public $version;
+
+    public $response;
 
     /**
      * The name and signature of the console command.
@@ -45,7 +47,15 @@ class UpdateCommand extends Command
         set_time_limit(3600); // 1 hour
 
         $this->installed = $this->getInstalledVersion();
-        $this->version = $this->getLatestVersion();
+        $this->response = $this->getLatestVersionResponse();
+        $this->version = ($this->response) ? $this->response->version : false;
+
+        if ($this->response == 'extension_required') {
+            $this->info('Sorry! Your system does not meet the minimum requirements for this update.');
+            $this->info('Please retry after installing the required version/extensions.');
+
+            return;
+        }
 
         if (!$this->version) {
             $this->info('No Update Available! You are already on the latest version.');
@@ -68,6 +78,12 @@ class UpdateCommand extends Command
             return;
         }
 
+        if(isset($this->response->deleted_files) && !empty($this->response->deleted_files)) {
+            if (!$this->deleteFiles($this->response->deleted_files)) {
+                return;
+            }
+        }
+
         if (!$this->migrateUpdate()) {
             return;
         }
@@ -84,7 +100,7 @@ class UpdateCommand extends Command
         return Setting::getSetting('version');
     }
 
-    public function getLatestVersion()
+    public function getLatestVersionResponse()
     {
         $this->info('Your currently installed version is ' . $this->installed);
         $this->line('');
@@ -94,7 +110,26 @@ class UpdateCommand extends Command
             $response = Updater::checkForUpdate($this->installed);
 
             if ($response->success) {
-                return $response->version->version;
+
+                $extensions = $response->version->extensions;
+
+                $is_required = false;
+
+                foreach ($extensions as $key => $extension) {
+
+                    if(!$extension) {
+                        $is_required = true;
+                        $this->info('❌ '.$key);
+                    }
+
+                    $this->info('✅ '.$key);
+                }
+
+                if($is_required) {
+                    return 'extension_required';
+                }
+
+                return $response->version;
             }
 
             return false;
@@ -110,7 +145,7 @@ class UpdateCommand extends Command
         $this->info('Downloading update...');
 
         try {
-            $path = Updater::download($this->version);
+            $path = Updater::download($this->version, 1);
             if (!is_string($path)) {
                 $this->error('Download exception');
                 return false;
@@ -149,6 +184,21 @@ class UpdateCommand extends Command
 
         try {
             Updater::copyFiles($path);
+        } catch (\Exception $e) {
+            $this->error($e->getMessage());
+
+            return false;
+        }
+
+        return true;
+    }
+
+    public function deleteFiles($files)
+    {
+        $this->info('Deleting unused old files...');
+
+        try {
+            Updater::deleteFiles($files);
         } catch (\Exception $e) {
             $this->error($e->getMessage());
 

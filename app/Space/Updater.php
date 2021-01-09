@@ -17,9 +17,9 @@ class Updater
         $data = null;
         if(env('APP_ENV') === 'development')
         {
-            $url = 'https://craterapp.com/downloads/check/latest/'. $installed_version . '?type=update&is_dev=1';
+            $url = 'downloads/check/latest/'. $installed_version . '?type=update&is_dev=1';
         } else {
-            $url = 'https://craterapp.com/downloads/check/latest/'. $installed_version . '?type=update';
+            $url = 'downloads/check/latest/'. $installed_version . '?type=update';
         }
 
         $response = static::getRemote($url, ['timeout' => 100, 'track_redirects' => true]);
@@ -28,18 +28,30 @@ class Updater
             $data = $response->getBody()->getContents();
         }
 
-        return json_decode($data);
+        $data = json_decode($data);
+
+        if ($data->success && $data->version && property_exists($data->version, 'extensions')) {
+            $extensions = $data->version->extensions;
+            $extensionData = [];
+            foreach (json_decode($extensions) as $extension) {
+                $extensionData[$extension] = phpversion($extension) ? true : false;
+            }
+            $extensionData['php'. '('.$data->version->minimum_php_version.')'] = version_compare(phpversion(), $data->version->minimum_php_version, ">=");
+            $data->version->extensions = $extensionData;
+        }
+
+        return $data;
     }
 
-    public static function download($new_version)
+    public static function download($new_version, $is_cmd = 0)
     {
         $data = null;
         $path = null;
 
         if (env('APP_ENV') === 'development') {
-            $url = 'https://craterapp.com/downloads/file/' . $new_version . '?type=update&is_dev=1';
+            $url = 'downloads/file/' . $new_version . '?type=update&is_dev=1&is_cmd='. $is_cmd;
         } else {
-            $url = 'https://craterapp.com/downloads/file/' . $new_version . '?type=update';
+            $url = 'downloads/file/' . $new_version . '?type=update&is_cmd='. $is_cmd;
         }
 
         $response = static::getRemote($url, ['timeout' => 100, 'track_redirects' => true]);
@@ -106,13 +118,23 @@ class Updater
 
     public static function copyFiles($temp_extract_dir)
     {
-
         if (!File::copyDirectory($temp_extract_dir . '/Crater', base_path())) {
             return false;
         }
 
         // Delete temp directory
         File::deleteDirectory($temp_extract_dir);
+
+        return true;
+    }
+
+    public static function deleteFiles($json)
+    {
+        $files = json_decode($json);
+
+        foreach($files as $file) {
+            \File::delete(base_path($file));
+        }
 
         return true;
     }
@@ -134,5 +156,4 @@ class Updater
             'data' => []
         ];
     }
-
 }

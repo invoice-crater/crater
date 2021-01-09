@@ -20,7 +20,7 @@
         }
 
         .heading-text {
-            font-weight: 600;
+            font-weight: bold;
             font-size: 24px;
             color: #5851D8;
             width: 100%;
@@ -30,7 +30,7 @@
         }
 
         .heading-date-range {
-            font-weight: 600;
+            font-weight: normal;
             font-size: 15px;
             color: #A5ACC1;
             width: 100%;
@@ -40,7 +40,7 @@
         }
 
         .sub-heading-text {
-            font-weight: 600;
+            font-weight: normal;
             font-size: 16px;
             color: #595959;
             padding: 0px;
@@ -65,7 +65,7 @@
         .income-amount {
             padding: 0px;
             margin: 0px;
-            font-weight: 500;
+            font-weight: bold;
             font-size: 16px;
             line-height: 21px;
             text-align: right;
@@ -123,7 +123,7 @@
             padding: 0px;
             margin: 0px;
             text-align: right;
-            font-weight: 500;
+            font-weight: bold;
             font-size: 16px;
             line-height: 21px;
             text-align: right;
@@ -142,7 +142,7 @@
             padding: 0px;
             margin: 0px;
             text-align: left;
-            font-weight: 600;
+            font-weight: bold;
             font-size: 16px;
             line-height: 21px;
             color: #595959;
@@ -152,7 +152,7 @@
             padding: 0px;
             margin: 0px;
             text-align: right;
-            font-weight: 500;
+            font-weight: bold;
             font-size: 20px;
             line-height: 21px;
             color: #5851D8;
@@ -172,7 +172,7 @@
             </tr>
             <tr>
                 <td colspan="2">
-                    <p class="sub-heading-text">PROFIT & LOSS REPORT</p>
+                    <p class="sub-heading-text">@lang('pdf_profit_loss_label')</p>
                 </td>
             </tr>
         </table>
@@ -180,14 +180,14 @@
         <table class="income-table">
             <tr>
                 <td>
-                    <p class="income-title">Income</p>
+                    <p class="income-title">@lang("pdf_income_label")</p>
                 </td>
                 <td>
                     <p class="income-amount">{!! format_money_pdf($income) !!}</p>
                 </td>
             </tr>
         </table>
-        <p class="expenses-title">Expenses</p>
+        <p class="expenses-title">@lang('pdf_expenses_label')</p>
         <div class="expenses-table-container">
             <table class="expenses-table">
                 @foreach ($expenseCategories as $expenseCategory)
@@ -219,7 +219,7 @@
     <table class="report-footer">
         <tr>
             <td>
-                <p class="report-footer-label">NET PROFIT</p>
+                <p class="report-footer-label">@lang("pdf_net_profit_label")</p>
             </td>
             <td>
                 <p class="report-footer-value">{!! format_money_pdf(($income-$totalExpense)) !!}</p>

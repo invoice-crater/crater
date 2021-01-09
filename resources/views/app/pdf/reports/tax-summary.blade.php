@@ -21,7 +21,7 @@
         }
 
         .heading-text {
-            font-weight: 600;
+            font-weight: bold;
             font-size: 24px;
             color: #5851D8;
             width: 100%;
@@ -31,7 +31,7 @@
         }
 
         .heading-date-range {
-            font-weight: 600;
+            font-weight: normal;
             font-size: 15px;
             color: #A5ACC1;
             width: 100%;
@@ -41,7 +41,7 @@
         }
 
         .sub-heading-text {
-            font-weight: 600;
+            font-weight: bold;
             font-size: 16px;
             color: #595959;
             padding: 0px;
@@ -99,7 +99,7 @@
             padding: 0px;
             margin: 0px;
             text-align: right;
-            font-weight: 500;
+            font-weight: bold;
             font-size: 16px;
             line-height: 21px;
             text-align: right;
@@ -118,7 +118,7 @@
             padding: 0px;
             margin: 0px;
             text-align: left;
-            font-weight: 600;
+            font-weight: bold;
             font-size: 16px;
             line-height: 21px;
             color: #595959;
@@ -128,7 +128,7 @@
             padding: 0px;
             margin: 0px;
             text-align: right;
-            font-weight: 500;
+            font-weight: bold;
             font-size: 20px;
             line-height: 21px;
             color: #5851D8;
@@ -152,11 +152,11 @@
             </tr>
             <tr>
                 <td colspan="2">
-                    <p class="sub-heading-text">TAX REPORT</p>
+                    <p class="sub-heading-text">@lang('pdf_tax_report_label')</p>
                 </td>
             </tr>
         </table>
-        <p class="tax-types-title">Tax Types</p>
+        <p class="tax-types-title">@lang('pdf_tax_types_label')</p>
         <div class="tax-table-container">
             <table class="tax-table">
                 @foreach ($taxTypes as $tax)
@@ -190,7 +190,7 @@
     <table class="report-footer">
         <tr>
             <td>
-                <p class="report-footer-label">TOTAL TAX</p>
+                <p class="report-footer-label">@lang('pdf_total_tax_label')</p>
             </td>
             <td>
                 <p class="report-footer-value">
