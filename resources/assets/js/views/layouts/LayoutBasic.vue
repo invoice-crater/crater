@@ -1,6 +1,7 @@
 <template>
   <div v-if="isAppLoaded" class="h-full">
     <base-modal />
+    <base-notification />
     <site-header />
     <div class="flex h-screen pt-16 pb-10 overflow-hidden">
       <site-sidebar />

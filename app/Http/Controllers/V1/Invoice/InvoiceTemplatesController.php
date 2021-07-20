@@ -3,8 +3,9 @@
 namespace Crater\Http\Controllers\V1\Invoice;
 
 use Crater\Http\Controllers\Controller;
-use Crater\Models\InvoiceTemplate;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class InvoiceTemplatesController extends Controller
 {
@@ -16,10 +17,17 @@ class InvoiceTemplatesController extends Controller
      */
     public function __invoke(Request $request)
     {
-        $invoiceTemplates = InvoiceTemplate::all();
+        $templates = Storage::disk('views')->files('/app/pdf/invoice');
+        $invoiceTemplates = [];
+
+        foreach ($templates as $key => $template) {
+            $templateName = Str::before(basename($template), '.blade.php');
+            $invoiceTemplates[$key]['name'] = $templateName;
+            $invoiceTemplates[$key]['path'] = asset('assets/img/PDF/'.$templateName.'.png');
+        }
 
         return response()->json([
-            'invoiceTemplates' => $invoiceTemplates
+            'invoiceTemplates' => $invoiceTemplates,
         ]);
     }
 }

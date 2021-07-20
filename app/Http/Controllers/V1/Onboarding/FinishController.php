@@ -3,9 +3,7 @@
 namespace Crater\Http\Controllers\V1\Onboarding;
 
 use Crater\Http\Controllers\Controller;
-use Crater\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 
 class FinishController extends Controller
 {
@@ -19,7 +17,6 @@ class FinishController extends Controller
     {
         \Storage::disk('local')->put('database_created', 'database_created');
 
-        $user = User::where('role', 'super admin')->first();
-        Auth::login($user);
+        return response()->json(['success' => true]);
     }
 }

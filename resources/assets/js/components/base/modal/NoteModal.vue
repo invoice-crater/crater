@@ -105,6 +105,14 @@ export default {
       if (!this.$v.formData.name.required) {
         return this.$tc('validation.required')
       }
+
+      if (!this.$v.formData.name.minLength) {
+        return this.$tc(
+          'validation.name_min_length',
+          this.$v.formData.name.$params.minLength.min,
+          { count: this.$v.formData.name.$params.minLength.min }
+        )
+      }
     },
     noteError() {
       if (!this.$v.formData.notes.$error) {
@@ -139,6 +147,11 @@ export default {
       required,
     },
   },
+  watch: {
+    noteType() {
+      this.setFields()
+    },
+  },
   async mounted() {
     this.setFields()
     if (this.modalDataID) {
@@ -150,14 +163,10 @@ export default {
         : (this.noteType = 'Invoice')
     }
   },
-  watch: {
-    noteType() {
-      this.setFields()
-    },
-  },
   methods: {
     ...mapActions('modal', ['closeModal', 'resetModalData']),
     ...mapActions('notes', ['addNote', 'updateNote']),
+    ...mapActions('notification', ['showNotification']),
     ...mapActions('invoice', {
       setInvoiceNote: 'selectNote',
     }),
@@ -214,15 +223,19 @@ export default {
 
         let res = await this.updateNote(data)
         if (res.data) {
-          window.toastr['success'](
-            this.$t('settings.customization.notes.note_updated')
-          )
+          this.showNotification({
+            type: 'success',
+            message: this.$t('settings.customization.notes.note_updated'),
+          })
 
           this.refreshData ? this.refreshData() : ''
           this.closeNoteModal()
           return true
         }
-        window.toastr['error'](res.data.error)
+        this.showNotification({
+          type: 'error',
+          message: res.data.error,
+        })
       } else {
         try {
           let data = {
@@ -235,9 +248,10 @@ export default {
 
           if (response.data && response.data.note) {
             this.isLoading = false
-            window.toastr['success'](
-              this.$t('settings.customization.notes.note_added')
-            )
+            this.showNotification({
+              type: 'success',
+              message: this.$t('settings.customization.notes.note_added'),
+            })
             if (
               (this.$route.name === 'invoices.create' &&
                 response.data.note.type === 'Invoice') ||
@@ -269,7 +283,10 @@ export default {
             this.closeNoteModal()
             return true
           }
-          window.toastr['error'](response.data.error)
+          this.showNotification({
+            type: 'error',
+            message: response.data.error,
+          })
         } catch (err) {
           if (err.response.data.errors.name) {
             this.isLoading = true

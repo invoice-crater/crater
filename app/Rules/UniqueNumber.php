@@ -7,7 +7,10 @@ use Illuminate\Contracts\Validation\Rule;
 class UniqueNumber implements Rule
 {
     public $id;
+
     public $class;
+
+    public $type;
 
     /**
      * Create a new rule instance.
@@ -31,11 +34,13 @@ class UniqueNumber implements Rule
     public function passes($attribute, $value)
     {
         if ($value && count(explode("-", $value)) > 2) {
-            $number = explode("-",$value);
+            $number = explode("-", $value);
             $uniqueNumber = $number[0].'-'.sprintf('%06d', intval($number[1]));
         } else {
             $uniqueNumber = $value;
         }
+
+        $this->type = $attribute;
 
         if ($this->id && $this->class::where('id', $this->id)->where($attribute, $uniqueNumber)->first()) {
             return true;
@@ -55,6 +60,8 @@ class UniqueNumber implements Rule
      */
     public function message()
     {
-        return 'Invalid number passed.';
+        $type = str_replace('_', ' ', $this->type);
+
+        return "{$type} is already used.";
     }
 }

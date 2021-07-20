@@ -176,7 +176,7 @@
 
         <sw-popup
           ref="notePopup"
-          class="my-6 text-sm font-semibold leading-5 text-primary-400"
+          class="z-10 my-6 text-sm font-semibold leading-5 text-primary-400"
         >
           <div slot="activator" class="float-right mt-1">
             + {{ $t('general.insert_note') }}
@@ -423,6 +423,8 @@ export default {
 
     ...mapActions('customer', ['fetchCustomers']),
 
+    ...mapActions('notification', ['showNotification']),
+
     invoiceWithAmount({ invoice_number, due_amount }) {
       return `${invoice_number} (${this.$utils.formatGraphMoney(
         due_amount,
@@ -561,25 +563,38 @@ export default {
             this.$router.push(
               `/admin/payments/${response.data.payment.id}/view`
             )
-            window.toastr['success'](this.$t('payments.updated_message'))
+            this.showNotification({
+              type: 'success',
+              message: this.$t('payments.updated_message'),
+            })
             return true
           }
 
           if (response.data.error === 'invalid_amount') {
-            window.toastr['error'](this.$t('invalid_amount_message'))
+            this.showNotification({
+              type: 'error',
+              message: this.$t('invalid_amount_message'),
+            })
             return false
           }
-
-          window.toastr['error'](response.data.error)
+          this.showNotification({
+            type: 'error',
+            message: response.data.error,
+          })
         } catch (err) {
           this.isLoading = false
 
           if (err.response.data.errors.payment_number) {
-            window.toastr['error'](err.response.data.errors.payment_number)
+            this.showNotification({
+              type: 'error',
+              message: err.response.data.errors.payment_number,
+            })
             return true
           }
-
-          window.toastr['error'](err.response.data.message)
+          this.showNotification({
+            type: 'error',
+            message: err.response.data.message,
+          })
         }
       } else {
         let data = {
@@ -599,26 +614,39 @@ export default {
             this.$router.push(
               `/admin/payments/${response.data.payment.id}/view`
             )
-            window.toastr['success'](this.$t('payments.created_message'))
+            this.showNotification({
+              type: 'success',
+              message: this.$t('payments.created_message'),
+            })
             this.isLoading = true
             return true
           }
 
           if (response.data.error === 'invalid_amount') {
-            window.toastr['error'](this.$t('invalid_amount_message'))
+            this.showNotification({
+              type: 'error',
+              message: this.$t('invalid_amount_message'),
+            })
             return false
           }
-
-          window.toastr['error'](response.data.error)
+          this.showNotification({
+            type: 'error',
+            message: response.data.error,
+          })
         } catch (err) {
           this.isLoading = false
 
           if (err.response.data.errors.payment_number) {
-            window.toastr['error'](err.response.data.errors.payment_number)
+            this.showNotification({
+              type: 'error',
+              message: err.response.data.errors.payment_number,
+            })
             return true
           }
-
-          window.toastr['error'](err.response.data.message)
+          this.showNotification({
+            type: 'error',
+            message: err.response.data.message,
+          })
         }
       }
     },

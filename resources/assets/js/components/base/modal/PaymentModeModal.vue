@@ -26,7 +26,7 @@
         {{ $t('general.cancel') }}
       </sw-button>
       <sw-button :loading="isLoading" variant="primary" type="submit">
-        <save-icon class="mr-2" v-if="!isLoading" />
+        <save-icon v-if="!isLoading" class="mr-2" />
         {{ !isEdit ? $t('general.save') : $t('general.update') }}
       </sw-button>
     </div>
@@ -62,6 +62,14 @@ export default {
       if (!this.$v.formData.name.required) {
         return this.$tc('validation.required')
       }
+
+      if (!this.$v.formData.name.minLength) {
+        return this.$tc(
+          'validation.name_min_length',
+          this.$v.formData.name.$params.minLength.min,
+          { count: this.$v.formData.name.$params.minLength.min }
+        )
+      }
     },
   },
   validations: {
@@ -82,6 +90,7 @@ export default {
   methods: {
     ...mapActions('modal', ['closeModal', 'resetModalData']),
     ...mapActions('payment', ['addPaymentMode', 'updatePaymentMode']),
+    ...mapActions('notification', ['showNotification']),
     resetFormData() {
       this.formData = {
         id: null,
@@ -100,27 +109,39 @@ export default {
       if (this.isEdit) {
         response = await this.updatePaymentMode(this.formData)
         if (response.data) {
-          window.toastr['success'](
-            this.$t('settings.customization.payments.payment_mode_updated')
-          )
+          this.showNotification({
+            type: 'success',
+            message: this.$t(
+              'settings.customization.payments.payment_mode_updated'
+            ),
+          })
           this.refreshData ? this.refreshData() : ''
           this.closePaymentModeModal()
           return true
         }
-        window.toastr['error'](response.data.error)
+        this.showNotification({
+          type: 'error',
+          message: response.data.error,
+        })
       } else {
         try {
           response = await this.addPaymentMode(this.formData)
           if (response.data) {
             this.isLoading = false
-            window.toastr['success'](
-              this.$t('settings.customization.payments.payment_mode_added')
-            )
+            this.showNotification({
+              type: 'success',
+              message: this.$t(
+                'settings.customization.payments.payment_mode_added'
+              ),
+            })
             this.refreshData ? this.refreshData() : ''
             this.closePaymentModeModal()
             return true
           }
-          window.toastr['error'](response.data.error)
+          this.showNotification({
+            type: 'error',
+            message: response.data.error,
+          })
         } catch (err) {
           this.isLoading = false
         }

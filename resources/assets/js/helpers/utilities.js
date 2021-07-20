@@ -1,3 +1,5 @@
+import i18n from '../plugins/i18n'
+
 export default {
   addClass(el, className) {
     if (el.classList) el.classList.add(className)
@@ -23,7 +25,13 @@ export default {
 
     amount = amount / 100
 
-    let { precision, decimal_separator, thousand_separator, symbol } = currency
+    let {
+      precision,
+      decimal_separator,
+      thousand_separator,
+      symbol,
+      swap_currency_symbol,
+    } = currency
 
     try {
       precision = Math.abs(precision)
@@ -37,20 +45,22 @@ export default {
       let j = i.length > 3 ? i.length % 3 : 0
 
       let moneySymbol = `<span style="font-family: sans-serif">${symbol}</span>`
+      let thousandText = j ? i.substr(0, j) + thousand_separator : ''
+      let amountText = i
+        .substr(j)
+        .replace(/(\d{3})(?=\d)/g, '$1' + thousand_separator)
+      let precisionText = precision
+        ? decimal_separator +
+        Math.abs(amount - i)
+          .toFixed(precision)
+          .slice(2)
+        : ''
+      let combinedAmountText =
+        negativeSign + thousandText + amountText + precisionText
 
-      return (
-        moneySymbol +
-        ' ' +
-        negativeSign +
-        (j ? i.substr(0, j) + thousand_separator : '') +
-        i.substr(j).replace(/(\d{3})(?=\d)/g, '$1' + thousand_separator) +
-        (precision
-          ? decimal_separator +
-            Math.abs(amount - i)
-              .toFixed(precision)
-              .slice(2)
-          : '')
-      )
+      return swap_currency_symbol
+        ? combinedAmountText + ' ' + moneySymbol
+        : moneySymbol + ' ' + combinedAmountText
     } catch (e) {
       console.log(e)
     }
@@ -68,7 +78,13 @@ export default {
 
     amount = amount / 100
 
-    let { precision, decimal_separator, thousand_separator, symbol } = currency
+    let {
+      precision,
+      decimal_separator,
+      thousand_separator,
+      symbol,
+      swap_currency_symbol,
+    } = currency
 
     try {
       precision = Math.abs(precision)
@@ -82,20 +98,22 @@ export default {
       let j = i.length > 3 ? i.length % 3 : 0
 
       let moneySymbol = `${symbol}`
+      let thousandText = j ? i.substr(0, j) + thousand_separator : ''
+      let amountText = i
+        .substr(j)
+        .replace(/(\d{3})(?=\d)/g, '$1' + thousand_separator)
+      let precisionText = precision
+        ? decimal_separator +
+        Math.abs(amount - i)
+          .toFixed(precision)
+          .slice(2)
+        : ''
+      let combinedAmountText =
+        negativeSign + thousandText + amountText + precisionText
 
-      return (
-        moneySymbol +
-        ' ' +
-        negativeSign +
-        (j ? i.substr(0, j) + thousand_separator : '') +
-        i.substr(j).replace(/(\d{3})(?=\d)/g, '$1' + thousand_separator) +
-        (precision
-          ? decimal_separator +
-            Math.abs(amount - i)
-              .toFixed(precision)
-              .slice(2)
-          : '')
-      )
+      return swap_currency_symbol
+        ? combinedAmountText + ' ' + moneySymbol
+        : moneySymbol + ' ' + combinedAmountText
     } catch (e) {
       console.log(e)
     }
@@ -112,11 +130,11 @@ export default {
     }
     let pattern = new RegExp(
       '^(https?:\\/\\/)?' + // protocol
-        '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|' + // domain name
-        '((\\d{1,3}\\.){3}\\d{1,3}))' + // OR ip (v4) address
-        '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*' + // port and path
-        '(\\?[;&a-z\\d%_.~+=-]*)?' + // query string
-        '(\\#[-a-z\\d_]*)?$',
+      '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|' + // domain name
+      '((\\d{1,3}\\.){3}\\d{1,3}))' + // OR ip (v4) address
+      '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*' + // port and path
+      '(\\?[;&a-z\\d%_.~+=-]*)?' + // query string
+      '(\\#[-a-z\\d_]*)?$',
       'i'
     ) // fragment locator
 
@@ -124,12 +142,20 @@ export default {
   },
 
   checkValidDomainUrl(url) {
-    if (url.includes('localhost')) {
+    if (url.includes('localhost') || url.includes('127.0.0.1')) {
       return true
     }
+
     let pattern = new RegExp(
-      '^([0-9A-Za-z-\\.@:%_+~#=]+)+((\\.[a-zA-Z]{2,3})+)(/(.)*)?(\\?(.)*)?'
-    )
+      '^(https?:\\/\\/)?' + // protocol
+      '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|' + // domain name
+      '((\\d{1,3}\\.){3}\\d{1,3}))' + // OR ip (v4) address
+      '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*' + // port and path
+      '(\\?[;&a-z\\d%_.~+=-]*)?' + // query string
+      '(\\#[-a-z\\d_]*)?$',
+      'i'
+    ) // fragment locator
+
     return !!pattern.test(url)
   },
 
@@ -245,6 +271,36 @@ export default {
         }
     }
   },
+  getStatusTranslation(status) {
+    switch (status) {
+      case 'DRAFT':
+        return i18n.t('general.draft')
+      case 'PAID':
+        return i18n.t('invoices.paid')
+      case 'UNPAID':
+        return i18n.t('invoices.unpaid')
+      case 'SENT':
+        return i18n.t('general.sent')
+      case 'REJECTED':
+        return i18n.t('estimates.rejected')
+      case 'ACCEPTED':
+        return i18n.t('estimates.accepted')
+      case 'VIEWED':
+        return i18n.t('invoices.viewed')
+      case 'EXPIRED':
+        return i18n.t('estimates.expired')
+      case 'PARTIALLY PAID':
+        return i18n.t('estimates.partially_paid')
+      case 'OVERDUE':
+        return i18n.t('invoices.overdue')
+      case 'COMPLETED':
+        return i18n.t('invoices.completed')
+      case 'DUE':
+        return i18n.t('general.due')
+      default:
+        return status
+    }
+  },
   compareVersion(v1, v2, options) {
     const lexicographical = options && options.lexicographical
     const zeroExtend = options && options.zeroExtend
@@ -280,5 +336,5 @@ export default {
       return -1
     }
     return 0
-  }
+  },
 }

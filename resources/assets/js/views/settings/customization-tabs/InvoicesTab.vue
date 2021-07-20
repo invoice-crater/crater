@@ -15,6 +15,19 @@
       </sw-input-group>
 
       <sw-input-group
+        :label="$t('settings.customization.invoices.invoice_number_length')"
+        :error="invoicenumberLengthError"
+        class="mt-6 mb-4"
+      >
+        <sw-input
+          v-model="invoices.invoice_number_length"
+          :invalid="$v.invoices.invoice_number_length.$error"
+          type="number"
+          style="max-width: 60px"
+        />
+      </sw-input-group>
+
+      <sw-input-group
         :label="
           $t('settings.customization.invoices.default_invoice_email_body')
         "
@@ -74,7 +87,7 @@
 
     <sw-divider class="mt-6 mb-8" />
 
-    <div class="flex">
+    <div class="flex mt-3 mb-4">
       <div class="relative w-12">
         <sw-switch
           v-model="invoiceAutogenerate"
@@ -101,11 +114,38 @@
         </p>
       </div>
     </div>
+    <div class="flex mb-2">
+      <div class="relative w-12">
+        <sw-switch
+          v-model="invoiceAsAttachment"
+          class="absolute"
+          style="top: -20px"
+          @change="setInvoiceSetting"
+        />
+      </div>
+
+      <div class="ml-4">
+        <p class="p-0 mb-1 text-base leading-snug text-black">
+          {{ $t('settings.customization.invoices.invoice_email_attachment') }}
+        </p>
+
+        <p
+          class="p-0 m-0 text-xs leading-tight text-gray-500"
+          style="max-width: 480px"
+        >
+          {{
+            $t(
+              'settings.customization.invoices.invoice_email_attachment_setting_description'
+            )
+          }}
+        </p>
+      </div>
+    </div>
   </div>
 </template>
 
 <script>
-const { required, maxLength, alpha } = require('vuelidate/lib/validators')
+const { required, maxLength, minValue, alpha, numeric } = require('vuelidate/lib/validators')
 import { mapActions, mapGetters } from 'vuex'
 
 export default {
@@ -120,9 +160,11 @@ export default {
   data() {
     return {
       invoiceAutogenerate: false,
+      invoiceAsAttachment: false,
 
       invoices: {
         invoice_prefix: null,
+        invoice_number_length: null,
         invoice_mail_body: null,
         company_address_format: null,
         shipping_address_format: null,
@@ -165,11 +207,29 @@ export default {
         return this.$t('validation.characters_only')
       }
     },
+    invoicenumberLengthError() {
+      if (!this.$v.invoices.invoice_number_length.$error) {
+        return ''
+      }
+
+      if (!this.$v.invoices.invoice_number_length.required) {
+        return this.$t('validation.required')
+      }
+
+      if (!this.$v.invoices.invoice_number_length.minValue) {
+        return this.$t('validation.number_length_minvalue')
+      }
+
+      if (!this.$v.invoices.invoice_number_length.numeric) {
+        return this.$t('validation.numbers_only')
+      }
+    },
   },
 
   watch: {
     settings(val) {
       this.invoices.invoice_prefix = val ? val.invoice_prefix : ''
+      this.invoices.invoice_number_length = val ? val.invoice_number_length : ''
 
       this.invoices.invoice_mail_body = val ? val.invoice_mail_body : null
       this.invoices.company_address_format = val
@@ -189,6 +249,14 @@ export default {
       } else {
         this.invoiceAutogenerate = false
       }
+
+      this.invoice_email_attachment = val ? val.invoice_email_attachment : ''
+
+      if (this.invoice_email_attachment === 'YES') {
+        this.invoiceAsAttachment = true
+      } else {
+        this.invoiceAsAttachment = false
+      }
     },
   },
 
@@ -199,23 +267,33 @@ export default {
         maxLength: maxLength(5),
         alpha,
       },
+      invoice_number_length: {
+        required,
+        minValue: minValue(1),
+        numeric
+      },
     },
   },
 
   methods: {
     ...mapActions('company', ['updateCompanySettings']),
+    ...mapActions('notification', ['showNotification']),
 
     async setInvoiceSetting() {
       let data = {
         settings: {
           invoice_auto_generate: this.invoiceAutogenerate ? 'YES' : 'NO',
+          invoice_email_attachment: this.invoiceAsAttachment ? 'YES' : 'NO',
         },
       }
 
       let response = await this.updateCompanySettings(data)
 
       if (response.data) {
-        window.toastr['success'](this.$t('general.setting_updated'))
+        this.showNotification({
+          type: 'success',
+          message: this.$t('general.setting_updated'),
+        })
       }
     },
 
@@ -237,6 +315,7 @@ export default {
       let data = {
         settings: {
           invoice_prefix: this.invoices.invoice_prefix,
+          invoice_number_length: this.invoices.invoice_number_length,
           invoice_mail_body: this.invoices.invoice_mail_body,
           invoice_company_address_format: this.invoices.company_address_format,
           invoice_billing_address_format: this.invoices.billing_address_format,
@@ -246,9 +325,12 @@ export default {
       }
 
       if (this.updateSetting(data)) {
-        window.toastr['success'](
-          this.$t('settings.customization.invoices.invoice_setting_updated')
-        )
+        this.showNotification({
+          type: 'success',
+          message: this.$t(
+            'settings.customization.invoices.invoice_setting_updated'
+          ),
+        })
       }
     },
 

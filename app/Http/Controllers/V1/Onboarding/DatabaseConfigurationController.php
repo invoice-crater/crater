@@ -3,10 +3,10 @@
 namespace Crater\Http\Controllers\V1\Onboarding;
 
 use Crater\Http\Controllers\Controller;
-use Crater\Space\EnvironmentManager;
 use Crater\Http\Requests\DatabaseEnvironmentRequest;
-use Illuminate\Support\Facades\Artisan;
+use Crater\Space\EnvironmentManager;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Artisan;
 
 class DatabaseConfigurationController extends Controller
 {
@@ -36,6 +36,7 @@ class DatabaseConfigurationController extends Controller
 
         if (array_key_exists("success", $results)) {
             Artisan::call('key:generate --force');
+            Artisan::call('optimize:clear');
             Artisan::call('config:clear');
             Artisan::call('cache:clear');
             Artisan::call('storage:link');
@@ -55,6 +56,7 @@ class DatabaseConfigurationController extends Controller
                     'database_connection' => 'sqlite',
                     'database_name' => database_path('database.sqlite'),
                 ];
+
                 break;
 
             case 'pgsql':
@@ -63,6 +65,7 @@ class DatabaseConfigurationController extends Controller
                     'database_host' => '127.0.0.1',
                     'database_port' => 5432,
                 ];
+
                 break;
 
             case 'mysql':
@@ -71,21 +74,15 @@ class DatabaseConfigurationController extends Controller
                     'database_host' => '127.0.0.1',
                     'database_port' => 3306,
                 ];
+
                 break;
 
-            case 'sqlsrv':
-                $databaseData = [
-                    'driver' => 'sqlsrv',
-                    'host' => '127.0.0.1',
-                    'port' => 1433,
-                ];
-                break;
         }
 
 
         return response()->json([
             'config' => $databaseData,
-            'success' => true
+            'success' => true,
         ]);
     }
 }

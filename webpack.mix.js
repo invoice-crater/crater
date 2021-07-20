@@ -1,6 +1,7 @@
 const mix = require('laravel-mix')
 const tailwindcss = require('tailwindcss')
 const CompressionPlugin = require('compression-webpack-plugin')
+const path = require('path')
 
 mix.webpackConfig({
   resolve: {
@@ -19,17 +20,14 @@ mix.options({
   }
 })
 
-/*
- |--------------------------------------------------------------------------
- | Admin
- |--------------------------------------------------------------------------
- */
-
 mix
   .js('resources/assets/js/app.js', 'public/assets/js/')
+  .vue({
+    version: 2,
+    extractVueStyles: true,
+  })
   .sass('resources/assets/sass/crater.scss', 'public/assets/css/')
   .options({
-    processCssUrls: false,
     postCss: [tailwindcss('./tailwind.config.js')],
   })
 

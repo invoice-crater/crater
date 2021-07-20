@@ -13,7 +13,7 @@ return [
     |
     */
     'core' => [
-        'minPhpVersion' => '7.2.0',
+        'minPhpVersion' => '7.4.0',
     ],
     'final' => [
         'key' => true,
@@ -43,8 +43,8 @@ return [
     |
     */
     'permissions' => [
-        'storage/framework/'     => '775',
-        'storage/logs/'          => '775',
-        'bootstrap/cache/'       => '775',
+        'storage/framework/' => '775',
+        'storage/logs/' => '775',
+        'bootstrap/cache/' => '775',
     ],
 ];

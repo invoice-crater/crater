@@ -15,7 +15,7 @@
             to="/admin/invoices"
           />
           <sw-breadcrumb-item
-            v-if="$route.name === 'invoice.edit'"
+            v-if="$route.name === 'invoices.edit'"
             :title="$t('invoices.edit_invoice')"
             to="#"
             active
@@ -211,7 +211,7 @@
           <div class="mb-6">
             <sw-popup
               ref="notePopup"
-              class="text-sm font-semibold leading-5 text-primary-400"
+              class="z-10 text-sm font-semibold leading-5 text-primary-400"
             >
               <div slot="activator" class="float-right mt-1">
                 + {{ $t('general.insert_note') }}
@@ -275,7 +275,7 @@
               @click="openTemplateModal"
             >
               <span class="flex text-black">
-                {{ $t('invoices.template') }} {{ getTemplateId }}
+                {{ getTemplateName }}
                 <pencil-icon class="h-5 ml-2 -mr-1" />
               </span>
             </sw-button>
@@ -331,8 +331,8 @@
                 <sw-button
                   slot="activator"
                   type="button"
-                  class="flex items-center justify-center w-12 border border-gray-300 border-solid rounded-tl-none rounded-bl-none font-base"
                   data-toggle="dropdown"
+                  size="discount"
                   aria-haspopup="true"
                   aria-expanded="false"
                   style="height: 43px"
@@ -477,7 +477,7 @@ export default {
       taxPerItem: null,
       discountPerItem: null,
       isLoadingInvoice: false,
-      isLoadingData: false,
+      isLoadingData: true,
       isLoading: false,
       maxDiscount: 0,
       invoicePrefix: null,
@@ -527,7 +527,7 @@ export default {
     ...mapGetters('notes', ['notes']),
 
     ...mapGetters('invoice', [
-      'getTemplateId',
+      'getTemplateName',
       'selectedCustomer',
       'selectedNote',
     ]),
@@ -582,23 +582,27 @@ export default {
     },
 
     totalSimpleTax() {
-      return window._.sumBy(this.newInvoice.taxes, function (tax) {
-        if (!tax.compound_tax) {
-          return tax.amount
-        }
+      return Math.round(
+        window._.sumBy(this.newInvoice.taxes, function (tax) {
+          if (!tax.compound_tax) {
+            return tax.amount
+          }
 
-        return 0
-      })
+          return 0
+        })
+      )
     },
 
     totalCompoundTax() {
-      return window._.sumBy(this.newInvoice.taxes, function (tax) {
-        if (tax.compound_tax) {
-          return tax.amount
-        }
+      return Math.round(
+        window._.sumBy(this.newInvoice.taxes, function (tax) {
+          if (tax.compound_tax) {
+            return tax.amount
+          }
 
-        return 0
-      })
+          return 0
+        })
+      )
     },
 
     totalTax() {
@@ -606,9 +610,11 @@ export default {
         return this.totalSimpleTax + this.totalCompoundTax
       }
 
-      return window._.sumBy(this.newInvoice.items, function (tax) {
-        return tax.tax
-      })
+      return Math.round(
+        window._.sumBy(this.newInvoice.items, function (tax) {
+          return tax.tax
+        })
+      )
     },
 
     allTaxes() {
@@ -721,6 +727,7 @@ export default {
       'selectCustomer',
       'updateInvoice',
       'resetSelectedNote',
+      'setTemplate',
     ]),
 
     ...mapActions('invoiceTemplate', ['fetchInvoiceTemplates']),
@@ -732,6 +739,8 @@ export default {
     ...mapActions('taxType', ['fetchTaxTypes']),
 
     ...mapActions('customFields', ['fetchCustomFields']),
+
+    ...mapActions('notification', ['showNotification']),
 
     selectFixed() {
       if (this.newInvoice.discount_type === 'fixed') {
@@ -793,6 +802,7 @@ export default {
               this.invoiceNumAttribute = res4.data.nextNumber
               this.invoicePrefix = res4.data.prefix
             }
+            this.setTemplate(this.getInvoiceTemplates[0].name)
           } else {
             this.invoicePrefix = res4.data.prefix
           }
@@ -843,10 +853,9 @@ export default {
 
               if (res2.data) {
                 let customFields = res2.data.customFields.data
-                this.setEditCustomFields(fields, customFields)
+                await this.setEditCustomFields(fields, customFields)
               }
             }
-
             this.isLoadingInvoice = false
           })
           .catch((error) => {
@@ -909,7 +918,7 @@ export default {
         total: this.total,
         tax: this.totalTax,
         user_id: null,
-        invoice_template_id: this.getTemplateId,
+        template_name: this.getTemplateName,
       }
 
       if (this.selectedCustomer != null) {
@@ -929,8 +938,10 @@ export default {
         .then((res) => {
           if (res.data) {
             this.$router.push(`/admin/invoices/${res.data.invoice.id}/view`)
-
-            window.toastr['success'](this.$t('invoices.created_message'))
+            this.showNotification({
+              type: 'success',
+              message: this.$t('invoices.created_message'),
+            })
           }
 
           this.isLoading = false
@@ -946,13 +957,17 @@ export default {
           this.isLoading = false
           if (res.data.success) {
             this.$router.push(`/admin/invoices/${res.data.invoice.id}/view`)
-            window.toastr['success'](this.$t('invoices.updated_message'))
+            this.showNotification({
+              type: 'success',
+              message: this.$t('invoices.updated_message'),
+            })
           }
 
           if (res.data.error === 'invalid_due_amount') {
-            window.toastr['error'](
-              this.$t('invoices.invalid_due_amount_message')
-            )
+            this.showNotification({
+              type: 'error',
+              message: this.$t('invoices.invalid_due_amount_message'),
+            })
           }
         })
         .catch((err) => {
@@ -968,12 +983,15 @@ export default {
       let amount = 0
 
       if (selectedTax.compound_tax && this.subtotalWithDiscount) {
-        amount =
+        amount = Math.round(
           ((this.subtotalWithDiscount + this.totalSimpleTax) *
             selectedTax.percent) /
-          100
+            100
+        )
       } else if (this.subtotalWithDiscount && selectedTax.percent) {
-        amount = (this.subtotalWithDiscount * selectedTax.percent) / 100
+        amount = Math.round(
+          (this.subtotalWithDiscount * selectedTax.percent) / 100
+        )
       }
 
       this.newInvoice.taxes.push({

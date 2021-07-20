@@ -16,18 +16,15 @@
 </template>
 
 <script>
-import { validationMixin } from 'vuelidate'
 import Mysql from './database/MysqlDatabase'
 import Pgsql from './database/PgsqlDatabase'
 import Sqlite from './database/SqliteDatabase'
-import Sqlsrv from './database/SqlsrvDatabase'
-
+import { mapActions } from 'vuex'
 export default {
   components: {
     Mysql,
     Pgsql,
     Sqlite,
-    Sqlsrv,
   },
   data() {
     return {
@@ -37,13 +34,14 @@ export default {
       isLoading: false,
       isFetching: false,
       database_connection: 'mysql',
-      connections: ['sqlite', 'mysql', 'pgsql', 'sqlsrv'],
+      connections: ['sqlite', 'mysql', 'pgsql'],
     }
   },
   created() {
     this.getDatabaseConfig(this.database_connection)
   },
   methods: {
+    ...mapActions('notification', ['showNotification']),
     async getDatabaseConfig(connection) {
       this.isLoading = this.isFetching = true
 
@@ -66,34 +64,48 @@ export default {
     async next(databaseData) {
       this.isLoading = this.isFetching = true
       try {
-        await window.axios.get('/sanctum/csrf-cookie')
-
         let response = await window.axios.post(
           '/api/v1/onboarding/database/config',
           databaseData
         )
-
-        await window.axios.get('/sanctum/csrf-cookie')
 
         if (response.data.success) {
           await window.axios.post('/api/v1/onboarding/finish')
 
           this.$emit('next', 3)
 
-          window.toastr['success'](
-            this.$t('wizard.success.' + response.data.success)
-          )
+          this.showNotification({
+            type: 'success',
+            message: this.$t('wizard.success.' + response.data.success),
+          })
 
           return true
         } else if (response.data.error) {
-          window.toastr['error'](
-            this.$t('wizard.errors.' + response.data.error)
-          )
+          if (response.data.requirement) {
+            this.showNotification({
+              type: 'error',
+              message: this.$t('wizard.errors.' + response.data.error, {
+                version: response.data.requirement.minimum,
+                name: this.database_connection,
+              }),
+            })
+            return
+          }
+          this.showNotification({
+            type: 'error',
+            message: this.$t('wizard.errors.' + response.data.error),
+          })
         } else if (response.data.error_message) {
-          window.toastr['error'](response.data.error_message)
+          this.showNotification({
+            type: 'error',
+            message: response.data.error_message,
+          })
         }
       } catch (e) {
-        window.toastr['error'](e.response.data.message)
+        this.showNotification({
+          type: 'error',
+          message: e.response.data.message,
+        })
       } finally {
         this.isLoading = this.isFetching = false
       }

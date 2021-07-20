@@ -218,7 +218,7 @@
           <div class="mb-6">
             <sw-popup
               ref="notePopup"
-              class="text-sm font-semibold leading-5 text-primary-400"
+              class="z-10 text-sm font-semibold leading-5 text-primary-400"
             >
               <div slot="activator" class="float-right mt-1">
                 + {{ $t('general.insert_note') }}
@@ -266,8 +266,8 @@
               variant="gray"
               @click="openTemplateModal"
             >
-              <span class="flex text-black">
-                {{ $t('estimates.estimate_template') }} {{ getTemplateId }}
+              <span class="flex text-black capitalize">
+                {{ getTemplateName }}
                 <pencil-icon class="h-5 ml-2 -mr-1" />
               </span>
             </sw-button>
@@ -322,8 +322,8 @@
                 <sw-button
                   slot="activator"
                   type="button"
-                  class="flex items-center justify-center w-12 border border-gray-300 border-solid rounded-tl-none rounded-bl-none font-base"
                   data-toggle="dropdown"
+                  size="discount"
                   aria-haspopup="true"
                   aria-expanded="false"
                   style="height: 43px"
@@ -469,7 +469,6 @@ export default {
       isLoadingEstimate: false,
       isLoadingData: false,
       isLoading: false,
-      maxDiscount: 0,
       estimateNumAttribute: null,
       estimatePrefix: null,
       EstimateFields: [
@@ -515,9 +514,9 @@ export default {
     ...mapGetters('company', ['defaultCurrency']),
 
     ...mapGetters('estimate', [
-      'getTemplateId',
       'selectedCustomer',
       'selectedNote',
+      'getTemplateName',
     ]),
 
     ...mapGetters('estimateTemplate', ['getEstimateTemplates']),
@@ -709,6 +708,7 @@ export default {
       'selectCustomer',
       'updateEstimate',
       'resetSelectedNote',
+      'setTemplate',
     ]),
 
     ...mapActions('item', ['fetchItems']),
@@ -720,6 +720,8 @@ export default {
     ...mapActions('estimateTemplate', ['fetchEstimateTemplates']),
 
     ...mapActions('customFields', ['fetchCustomFields']),
+
+    ...mapActions('notification', ['showNotification']),
 
     selectFixed() {
       if (this.newEstimate.discount_type === 'fixed') {
@@ -788,6 +790,7 @@ export default {
               this.estimateNumAttribute = res4.data.nextNumber
               this.estimatePrefix = res4.data.prefix
             }
+            this.setTemplate(this.getEstimateTemplates[0].name)
           } else {
             this.estimatePrefix = res4.data.prefix
           }
@@ -902,7 +905,7 @@ export default {
         total: this.total,
         tax: this.totalTax,
         user_id: null,
-        estimate_template_id: this.getTemplateId,
+        template_name: this.getTemplateName,
       }
 
       if (this.selectedCustomer != null) {
@@ -922,7 +925,10 @@ export default {
         .then((res) => {
           if (res.data) {
             this.$router.push(`/admin/estimates/${res.data.estimate.id}/view`)
-            window.toastr['success'](this.$t('estimates.created_message'))
+            this.showNotification({
+              type: 'success',
+              message: this.$t('estimates.created_message'),
+            })
           }
 
           this.isLoading = false
@@ -938,7 +944,10 @@ export default {
           this.isLoading = false
           if (res.data) {
             this.$router.push(`/admin/estimates/${res.data.estimate.id}/view`)
-            window.toastr['success'](this.$t('estimates.updated_message'))
+            this.showNotification({
+              type: 'success',
+              message: this.$t('estimates.updated_message'),
+            })
           }
         })
         .catch((err) => {
@@ -954,12 +963,15 @@ export default {
       let amount = 0
 
       if (selectedTax.compound_tax && this.subtotalWithDiscount) {
-        amount =
+        amount = Math.round(
           ((this.subtotalWithDiscount + this.totalSimpleTax) *
             selectedTax.percent) /
-          100
+            100
+        )
       } else if (this.subtotalWithDiscount && selectedTax.percent) {
-        amount = (this.subtotalWithDiscount * selectedTax.percent) / 100
+        amount = Math.round(
+          (this.subtotalWithDiscount * selectedTax.percent) / 100
+        )
       }
 
       this.newEstimate.taxes.push({
@@ -972,7 +984,7 @@ export default {
         amount,
       })
 
-      if (this.$$refs) {
+      if (this.$refs) {
         this.$refs.taxModal.close()
       }
     },

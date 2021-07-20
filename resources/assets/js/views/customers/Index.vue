@@ -2,10 +2,10 @@
   <base-page class="customer-create">
     <sw-page-header :title="$t('customers.title')">
       <sw-breadcrumb slot="breadcrumbs">
-        <sw-breadcrumb-item to="dashboard" :title="$t('general.home')" />
+        <sw-breadcrumb-item :title="$t('general.home')" to="dashboard" />
         <sw-breadcrumb-item
-          to="#"
           :title="$tc('customers.customer', 2)"
+          to="#"
           active
         />
       </sw-breadcrumb>
@@ -159,7 +159,7 @@
           :filterable="false"
           cell-class="no-click"
         >
-          <div class="relative block" slot-scope="row">
+          <div slot-scope="row" class="relative block">
             <sw-checkbox
               :id="row.id"
               v-model="selectField"
@@ -195,7 +195,11 @@
           <template slot-scope="row">
             <span>{{ $t('customers.contact_name') }}</span>
             <span>
-              {{ row.contact_name ? row.contact_name : 'No Contact Name' }}
+              {{
+                row.contact_name
+                  ? row.contact_name
+                  : $t('customers.no_contact_name')
+              }}
             </span>
           </template>
         </sw-table-column>
@@ -208,7 +212,7 @@
           <template slot-scope="row">
             <span>{{ $t('customers.phone') }}</span>
             <span>
-              {{ row.phone ? row.phone : 'No Contact' }}
+              {{ row.phone ? row.phone : $t('customers.no_contact') }}
             </span>
           </template>
         </sw-table-column>
@@ -243,16 +247,16 @@
               <dot-icon slot="activator" />
 
               <sw-dropdown-item
-                tag-name="router-link"
                 :to="`customers/${row.id}/edit`"
+                tag-name="router-link"
               >
                 <pencil-icon class="h-5 mr-3 text-gray-600" />
                 {{ $t('general.edit') }}
               </sw-dropdown-item>
 
               <sw-dropdown-item
-                tag-name="router-link"
                 :to="`customers/${row.id}/view`"
+                tag-name="router-link"
               >
                 <eye-icon class="h-5 mr-3 text-gray-600" />
                 {{ $t('general.view') }}
@@ -281,7 +285,6 @@ import {
   EyeIcon,
 } from '@vue-hero-icons/solid'
 import AstronautIcon from '../../components/icon/AstronautIcon'
-import { request } from 'http'
 
 export default {
   components: {
@@ -355,6 +358,7 @@ export default {
       'deleteMultipleCustomers',
       'setSelectAllState',
     ]),
+    ...mapActions('notification', ['showNotification']),
     refreshTable() {
       this.$refs.table.refresh()
     },
@@ -399,43 +403,60 @@ export default {
     },
 
     async removeCustomer(id) {
-      swal({
+      this.$swal({
         title: this.$t('general.are_you_sure'),
         text: this.$tc('customers.confirm_delete'),
-        icon: '/assets/icon/trash-solid.svg',
-        buttons: true,
-        dangerMode: true,
-      }).then(async (willDelete) => {
-        if (willDelete) {
+        icon: 'error',
+        iconHtml: `<svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-red-600"fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                    </svg>`,
+        showCancelButton: true,
+        showConfirmButton: true,
+      }).then(async (result) => {
+        if (result.value) {
           let res = await this.deleteCustomer({ ids: [id] })
 
           if (res.data.success) {
-            window.toastr['success'](this.$tc('customers.deleted_message', 1))
+            this.showNotification({
+              type: 'success',
+              message: this.$tc('customers.deleted_message', 1),
+            })
             this.$refs.table.refresh()
             return true
           }
-
-          window.toastr['error'](res.data.message)
+          this.showNotification({
+            type: 'error',
+            message: this.$tc(res.data.message),
+          })
           return true
         }
       })
     },
 
     async removeMultipleCustomers() {
-      swal({
+      this.$swal({
         title: this.$t('general.are_you_sure'),
         text: this.$tc('customers.confirm_delete', 2),
-        icon: '/assets/icon/trash-solid.svg',
-        buttons: true,
-        dangerMode: true,
-      }).then(async (willDelete) => {
-        if (willDelete) {
+        icon: 'error',
+        iconHtml: `<svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-red-600"fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                    </svg>`,
+        showCancelButton: true,
+        showConfirmButton: true,
+      }).then(async (result) => {
+        if (result.value) {
           let request = await this.deleteMultipleCustomers()
           if (request.data.success) {
-            window.toastr['success'](this.$tc('customers.deleted_message', 2))
+            this.showNotification({
+              type: 'success',
+              message: this.$tc('customers.deleted_message', 2),
+            })
             this.refreshTable()
           } else if (request.data.error) {
-            window.toastr['error'](request.data.message)
+            this.showNotification({
+              type: 'error',
+              message: request.data.message,
+            })
           }
         }
       })

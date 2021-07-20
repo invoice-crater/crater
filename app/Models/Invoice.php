@@ -2,46 +2,41 @@
 
 namespace Crater\Models;
 
-use Crater\Models\Company;
-use Crater\Models\CompanySetting;
-use Crater\Models\Currency;
-use Crater\Models\Tax;
-use Illuminate\Database\Eloquent\Model;
-use Crater\Models\InvoiceTemplate;
-use Crater\Models\Payment;
+use App;
+use Barryvdh\DomPDF\Facade as PDF;
 use Carbon\Carbon;
-use Crater\Traits\HasCustomFieldsTrait;
 use Crater\Mail\SendInvoiceMail;
+use Crater\Traits\GeneratesPdfTrait;
+use Crater\Traits\HasCustomFieldsTrait;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 use Vinkla\Hashids\Facades\Hashids;
-use Crater\Traits\GeneratesPdfTrait;
-use Barryvdh\DomPDF\Facade as PDF;
-use Illuminate\Support\Facades\Auth;
 
 class Invoice extends Model implements HasMedia
 {
-    use HasFactory, InteractsWithMedia, GeneratesPdfTrait;
+    use HasFactory;
+    use InteractsWithMedia;
+    use GeneratesPdfTrait;
     use HasCustomFieldsTrait;
 
-    const STATUS_DRAFT = 'DRAFT';
-    const STATUS_SENT = 'SENT';
-    const STATUS_VIEWED = 'VIEWED';
-    const STATUS_OVERDUE = 'OVERDUE';
-    const STATUS_COMPLETED = 'COMPLETED';
+    public const STATUS_DRAFT = 'DRAFT';
+    public const STATUS_SENT = 'SENT';
+    public const STATUS_VIEWED = 'VIEWED';
+    public const STATUS_OVERDUE = 'OVERDUE';
+    public const STATUS_COMPLETED = 'COMPLETED';
 
-    const STATUS_DUE = 'DUE';
-    const STATUS_UNPAID = 'UNPAID';
-    const STATUS_PARTIALLY_PAID = 'PARTIALLY_PAID';
-    const STATUS_PAID = 'PAID';
+    public const STATUS_DUE = 'DUE';
+    public const STATUS_UNPAID = 'UNPAID';
+    public const STATUS_PARTIALLY_PAID = 'PARTIALLY_PAID';
+    public const STATUS_PAID = 'PAID';
 
     protected $dates = [
         'created_at',
         'updated_at',
         'deleted_at',
-        'invoice_date',
-        'due_date'
     ];
 
     protected $casts = [
@@ -54,14 +49,14 @@ class Invoice extends Model implements HasMedia
     ];
 
     protected $guarded = [
-        'id'
+        'id',
     ];
 
     protected $appends = [
         'formattedCreatedAt',
         'formattedInvoiceDate',
         'formattedDueDate',
-        'invoicePdfUrl'
+        'invoicePdfUrl',
     ];
 
     public function setInvoiceDateAttribute($value)
@@ -81,12 +76,15 @@ class Invoice extends Model implements HasMedia
     public static function getNextInvoiceNumber($value)
     {
         // Get the last created order
-        $lastOrder = Invoice::where('invoice_number', 'LIKE', $value . '-%')
+        $lastOrder = Invoice::where('invoice_number', 'LIKE', $value.'-%')
             ->orderBy('invoice_number', 'desc')
             ->first();
 
+        // Get number length config
+        $numberLength = CompanySetting::getSetting('invoice_number_length', request()->header('company'));
+        $numberLengthText = "%0{$numberLength}d";
 
-        if (!$lastOrder) {
+        if (! $lastOrder) {
             // We get here if there is no order at all
             // If there is no number set it to 0, which will be 1 at the end.
             $number = 0;
@@ -101,7 +99,7 @@ class Invoice extends Model implements HasMedia
         // the %06d part makes sure that there are always 6 numbers in the string.
         // so it adds the missing zero's when needed.
 
-        return sprintf('%06d', intval($number) + 1);
+        return sprintf($numberLengthText, intval($number) + 1);
     }
 
     public function emailLogs()
@@ -144,14 +142,9 @@ class Invoice extends Model implements HasMedia
         return $this->belongsTo('Crater\Models\User', 'creator_id');
     }
 
-    public function invoiceTemplate()
-    {
-        return $this->belongsTo(InvoiceTemplate::class);
-    }
-
     public function getInvoicePdfUrlAttribute()
     {
-        return url('/invoices/pdf/' . $this->unique_hash);
+        return url('/invoices/pdf/'.$this->unique_hash);
     }
 
     public function getPreviousStatus()
@@ -185,30 +178,35 @@ class Invoice extends Model implements HasMedia
     public function getInvoiceNumAttribute()
     {
         $position = $this->strposX($this->invoice_number, "-", 1) + 1;
+
         return substr($this->invoice_number, $position);
     }
 
     public function getInvoicePrefixAttribute()
     {
         $prefix = explode("-", $this->invoice_number)[0];
+
         return $prefix;
     }
 
     public function getFormattedCreatedAtAttribute($value)
     {
         $dateFormat = CompanySetting::getSetting('carbon_date_format', $this->company_id);
+
         return Carbon::parse($this->created_at)->format($dateFormat);
     }
 
     public function getFormattedDueDateAttribute($value)
     {
         $dateFormat = CompanySetting::getSetting('carbon_date_format', $this->company_id);
+
         return Carbon::parse($this->due_date)->format($dateFormat);
     }
 
     public function getFormattedInvoiceDateAttribute($value)
     {
         $dateFormat = CompanySetting::getSetting('carbon_date_format', $this->company_id);
+
         return Carbon::parse($this->invoice_date)->format($dateFormat);
     }
 
@@ -226,13 +224,13 @@ class Invoice extends Model implements HasMedia
     {
         return $query->whereIn('invoices.paid_status', [
             self::STATUS_UNPAID,
-            self::STATUS_PARTIALLY_PAID
+            self::STATUS_PARTIALLY_PAID,
         ]);
     }
 
     public function scopeWhereInvoiceNumber($query, $invoiceNumber)
     {
-        return $query->where('invoices.invoice_number', 'LIKE', '%' . $invoiceNumber . '%');
+        return $query->where('invoices.invoice_number', 'LIKE', '%'.$invoiceNumber.'%');
     }
 
     public function scopeInvoicesBetween($query, $start, $end)
@@ -247,9 +245,9 @@ class Invoice extends Model implements HasMedia
     {
         foreach (explode(' ', $search) as $term) {
             $query->whereHas('user', function ($query) use ($term) {
-                $query->where('name', 'LIKE', '%' . $term . '%')
-                    ->orWhere('contact_name', 'LIKE', '%' . $term . '%')
-                    ->orWhere('company_name', 'LIKE', '%' . $term . '%');
+                $query->where('name', 'LIKE', '%'.$term.'%')
+                    ->orWhere('contact_name', 'LIKE', '%'.$term.'%')
+                    ->orWhere('company_name', 'LIKE', '%'.$term.'%');
             });
         }
     }
@@ -355,7 +353,7 @@ class Invoice extends Model implements HasMedia
 
         self::createItems($invoice, $request);
 
-        if ($request->has('taxes') && (!empty($request->taxes))) {
+        if ($request->has('taxes') && (! empty($request->taxes))) {
             self::createTaxes($invoice, $request);
         }
 
@@ -364,11 +362,10 @@ class Invoice extends Model implements HasMedia
         }
 
         $invoice = Invoice::with([
-            'items',
-            'user',
-            'invoiceTemplate',
-            'taxes'
-        ])
+                'items',
+                'user',
+                'taxes'
+            ])
             ->find($invoice->id);
 
         return $invoice;
@@ -392,7 +389,7 @@ class Invoice extends Model implements HasMedia
             $data['paid_status'] = Invoice::STATUS_PAID;
         } elseif ($this->due_amount < 0 && $this->paid_status != Invoice::STATUS_UNPAID) {
             return response()->json([
-                'error' => 'invalid_due_amount'
+                'error' => 'invalid_due_amount',
             ]);
         } elseif ($data['due_amount'] != 0 && $this->paid_status == Invoice::STATUS_PAID) {
             $data['status'] = $this->getPreviousStatus();
@@ -407,7 +404,7 @@ class Invoice extends Model implements HasMedia
 
         self::createItems($this, $request);
 
-        if ($request->has('taxes') && (!empty($request->taxes))) {
+        if ($request->has('taxes') && (! empty($request->taxes))) {
             self::createTaxes($this, $request);
         }
 
@@ -416,11 +413,10 @@ class Invoice extends Model implements HasMedia
         }
 
         $invoice = Invoice::with([
-            'items',
-            'user',
-            'invoiceTemplate',
-            'taxes'
-        ])
+                'items',
+                'user',
+                'taxes'
+            ])
             ->find($this->id);
 
         return $invoice;
@@ -432,6 +428,7 @@ class Invoice extends Model implements HasMedia
         $data['user'] = $this->user->toArray();
         $data['company'] = Company::find($this->company_id);
         $data['body'] = $this->getEmailBody($data['body']);
+        $data['attach']['data'] = ($this->getEmailAttachmentSetting()) ? $this->getPDFData() : null;
 
         if ($this->status == Invoice::STATUS_DRAFT) {
             $this->status = Invoice::STATUS_SENT;
@@ -442,7 +439,7 @@ class Invoice extends Model implements HasMedia
         \Mail::to($data['to'])->send(new SendInvoiceMail($data));
 
         return [
-            'success' => true
+            'success' => true,
         ];
     }
 
@@ -467,7 +464,7 @@ class Invoice extends Model implements HasMedia
 
     public static function createTaxes($invoice, $request)
     {
-        if ($request->has('taxes') && (!empty($request->taxes))) {
+        if ($request->has('taxes') && (! empty($request->taxes))) {
             foreach ($request->taxes as $tax) {
                 $tax['company_id'] = $request->header('company');
 
@@ -480,49 +477,32 @@ class Invoice extends Model implements HasMedia
 
     public function getPDFData()
     {
-        $taxTypes = [];
-        $taxes = [];
-        $labels = [];
+        $taxes = collect();
 
         if ($this->tax_per_item === 'YES') {
             foreach ($this->items as $item) {
                 foreach ($item->taxes as $tax) {
-                    if (!in_array($tax->name, $taxTypes)) {
-                        array_push($taxTypes, $tax->name);
-                        array_push($labels, $tax->name . ' (' . $tax->percent . '%)');
+                    $found = $taxes->filter(function ($item) use ($tax) {
+                        return $item->tax_type_id == $tax->tax_type_id;
+                    })->first();
+
+                    if ($found) {
+                        $found->amount += $tax->amount;
+                    } else {
+                        $taxes->push($tax);
                     }
                 }
-            }
-
-            foreach ($taxTypes as $taxType) {
-                $total = 0;
-
-                foreach ($this->items as $item) {
-                    foreach ($item->taxes as $tax) {
-                        if ($tax->name == $taxType) {
-                            $total += $tax->amount;
-                        }
-                    }
-                }
-
-                array_push($taxes, $total);
             }
         }
 
-        $invoiceTemplate = InvoiceTemplate::find($this->invoice_template_id);
+        $invoiceTemplate = self::find($this->id)->template_name;
 
         $company = Company::find($this->company_id);
+        $locale = CompanySetting::getSetting('language', $company->id);
 
-        $logo = $company->getMedia('logo')->first();
+        App::setLocale($locale);
 
-        $isSystem = FileDisk::whereSetAsDefault(true)->first()->isSystem();
-        $isLocalhost = config('session.domain') === 'localhost';
-
-        if ($logo && $isLocalhost && $isSystem) {
-            $logo = $logo->getPath();
-        } else if ($logo) {
-            $logo = $logo->getFullUrl();
-        }
+        $logo = $company->logo_path;
 
         view()->share([
             'invoice' => $this,
@@ -531,15 +511,29 @@ class Invoice extends Model implements HasMedia
             'billing_address' => $this->getCustomerBillingAddress(),
             'notes' => $this->getNotes(),
             'logo' => $logo ?? null,
-            'labels' => $labels,
-            'taxes' => $taxes
+            'taxes' => $taxes,
         ]);
 
-        return PDF::loadView('app.pdf.invoice.' . $invoiceTemplate->view);
+        return PDF::loadView('app.pdf.invoice.'.$invoiceTemplate);
+    }
+
+    public function getEmailAttachmentSetting()
+    {
+        $invoiceAsAttachment = CompanySetting::getSetting('invoice_email_attachment', $this->company_id);
+
+        if ($invoiceAsAttachment == 'NO') {
+            return false;
+        }
+
+        return true;
     }
 
     public function getCompanyAddress()
     {
+        if ($this->company && (! $this->company->address()->exists())) {
+            return false;
+        }
+
         $format = CompanySetting::getSetting('invoice_company_address_format', $this->company_id);
 
         return $this->getFormattedString($format);
@@ -547,6 +541,10 @@ class Invoice extends Model implements HasMedia
 
     public function getCustomerShippingAddress()
     {
+        if ($this->user && (! $this->user->shippingAddress()->exists())) {
+            return false;
+        }
+
         $format = CompanySetting::getSetting('invoice_shipping_address_format', $this->company_id);
 
         return $this->getFormattedString($format);
@@ -554,6 +552,10 @@ class Invoice extends Model implements HasMedia
 
     public function getCustomerBillingAddress()
     {
+        if ($this->user && (! $this->user->billingAddress()->exists())) {
+            return false;
+        }
+
         $format = CompanySetting::getSetting('invoice_billing_address_format', $this->company_id);
 
         return $this->getFormattedString($format);
@@ -580,7 +582,7 @@ class Invoice extends Model implements HasMedia
             '{INVOICE_DUE_DATE}' => $this->formattedDueDate,
             '{INVOICE_NUMBER}' => $this->invoice_number,
             '{INVOICE_REF_NUMBER}' => $this->reference_number,
-            '{INVOICE_LINK}' => url('/customer/invoices/pdf/' . $this->unique_hash)
+            '{INVOICE_LINK}' => url('/customer/invoices/pdf/'.$this->unique_hash),
         ];
     }
 }

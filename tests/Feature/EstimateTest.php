@@ -1,17 +1,21 @@
 <?php
 
-use Crater\Models\User;
-use Crater\Models\Estimate;
-use Crater\Models\EstimateItem;
-use Crater\Models\Tax;
-use Illuminate\Support\Facades\Artisan;
-use Laravel\Sanctum\Sanctum;
-use Crater\Http\Requests\EstimatesRequest;
 use Crater\Http\Controllers\V1\Estimate\EstimatesController;
 use Crater\Http\Controllers\V1\Estimate\SendEstimateController;
 use Crater\Http\Requests\DeleteEstimatesRequest;
+use Crater\Http\Requests\EstimatesRequest;
 use Crater\Http\Requests\SendEstimatesRequest;
-use function Pest\Laravel\{postJson, putJson, getJson};
+use Crater\Mail\SendEstimateMail;
+use Crater\Models\Estimate;
+use Crater\Models\EstimateItem;
+use Crater\Models\Tax;
+use Crater\Models\User;
+use Illuminate\Support\Facades\Artisan;
+use Laravel\Sanctum\Sanctum;
+
+use function Pest\Laravel\getJson;
+use function Pest\Laravel\postJson;
+use function Pest\Laravel\putJson;
 
 beforeEach(function () {
     Artisan::call('db:seed', ['--class' => 'DatabaseSeeder', '--force' => true]);
@@ -36,10 +40,10 @@ test('get estimates', function () {
 test('create estimate', function () {
     $estimate = Estimate::factory()->raw([
         'items' => [
-            EstimateItem::factory()->raw()
+            EstimateItem::factory()->raw(),
         ],
         'taxes' => [
-            Tax::factory()->raw()
+            Tax::factory()->raw(),
         ],
     ]);
 
@@ -47,7 +51,7 @@ test('create estimate', function () {
         ->assertStatus(200);
 
     $this->assertDatabaseHas('estimates', [
-        'estimate_template_id' => $estimate['estimate_template_id'],
+        'template_name' => $estimate['template_name'],
         'estimate_number' => $estimate['estimate_number'],
         'discount_type' => $estimate['discount_type'],
         'discount_val' => $estimate['discount_val'],
@@ -79,21 +83,21 @@ test('update estimate', function () {
 
     $estimate2 = Estimate::factory()->raw([
         'items' => [
-            EstimateItem::factory()->raw()
+            EstimateItem::factory()->raw(),
         ],
         'taxes' => [
             Tax::factory()->raw([
-                'tax_type_id' => $estimate->taxes[0]->tax_type_id
-            ])
-        ]
+                'tax_type_id' => $estimate->taxes[0]->tax_type_id,
+            ]),
+        ],
     ]);
 
-    $response = putJson('api/v1/estimates/' . $estimate->id, $estimate2);
+    $response = putJson('api/v1/estimates/'.$estimate->id, $estimate2);
 
     $newEstimate = $response->decodeResponseJson()['estimate'];
 
     $this->assertDatabaseHas('estimates', [
-        'estimate_template_id' => $estimate2['estimate_template_id'],
+        'template_name' => $estimate2['template_name'],
         'estimate_number' => $estimate2['estimate_number'],
         'discount_type' => $estimate2['discount_type'],
         'discount_val' => $estimate2['discount_val'],
@@ -106,11 +110,11 @@ test('update estimate', function () {
     ]);
 
     $this->assertDatabaseHas('taxes', [
-        'estimate_id' => $newEstimate['id']
+        'estimate_id' => $newEstimate['id'],
     ]);
 
     $this->assertDatabaseHas('estimate_items', [
-        'estimate_id' => $newEstimate['id']
+        'estimate_id' => $newEstimate['id'],
     ]);
 
     $response->assertStatus(200);
@@ -131,12 +135,12 @@ test('search estimates', function () {
         'search' => 'doe',
         'from_date' => '2020-07-18',
         'to_date' => '2020-07-20',
-        'estimate_number' => '000003'
+        'estimate_number' => '000003',
     ];
 
     $queryString = http_build_query($filters, '', '&');
 
-    $response = getJson('api/v1/estimates?' . $queryString);
+    $response = getJson('api/v1/estimates?'.$queryString);
 
     $response->assertStatus(200);
 });
@@ -150,6 +154,8 @@ test('send estimate using a form request', function () {
 });
 
 test('send estimate to customer', function () {
+    Mail::fake();
+
     $estimate = Estimate::factory()->create([
         'estimate_date' => '1988-07-18',
         'expiry_date' => '1988-08-18',
@@ -159,14 +165,16 @@ test('send estimate to customer', function () {
         'subject' => 'test',
         'body' => 'test',
         'from' => 'john@example.com',
-        'to' => 'doe@example.com'
+        'to' => 'doe@example.com',
     ];
 
     postJson("api/v1/estimates/{$estimate->id}/send", $data)
         ->assertStatus(200)
         ->assertJson([
-            'success' => true
+            'success' => true,
         ]);
+
+    Mail::assertSent(SendEstimateMail::class);
 });
 
 test('estimate mark as accepted', function () {
@@ -176,7 +184,7 @@ test('estimate mark as accepted', function () {
     ]);
 
     $data = [
-        'status' => Estimate::STATUS_ACCEPTED
+        'status' => Estimate::STATUS_ACCEPTED,
     ];
 
     $response = postJson("api/v1/estimates/{$estimate->id}/status", $data);
@@ -184,7 +192,7 @@ test('estimate mark as accepted', function () {
     $response
         ->assertOk()
         ->assertJson([
-            'success' => true
+            'success' => true,
         ]);
 
     $estimate2 = Estimate::find($estimate->id);
@@ -198,7 +206,7 @@ test('estimate mark as rejected', function () {
     ]);
 
     $data = [
-        'status' => Estimate::STATUS_REJECTED
+        'status' => Estimate::STATUS_REJECTED,
     ];
 
     $response = postJson("api/v1/estimates/{$estimate->id}/status", $data);
@@ -206,7 +214,7 @@ test('estimate mark as rejected', function () {
     $response
         ->assertOk()
         ->assertJson([
-            'success' => true
+            'success' => true,
         ]);
 
     $estimate2 = Estimate::find($estimate->id);
@@ -242,7 +250,7 @@ test('delete multiple estimates', function () {
     $ids = $estimates->pluck('id');
 
     $data = [
-        'ids' => $ids
+        'ids' => $ids,
     ];
 
     $response = postJson('api/v1/estimates/delete', $data);
@@ -250,7 +258,7 @@ test('delete multiple estimates', function () {
     $response
         ->assertStatus(200)
         ->assertJson([
-            'success' => true
+            'success' => true,
         ]);
 
     foreach ($estimates as $estimate) {

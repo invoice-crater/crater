@@ -24,8 +24,8 @@
         required
       >
         <sw-input
-          :invalid="$v.mailConfigData.mail_host.$error"
           v-model.trim="mailConfigData.mail_host"
+          :invalid="$v.mailConfigData.mail_host.$error"
           type="text"
           name="mail_host"
           class="mt-2"
@@ -33,33 +33,23 @@
         />
       </sw-input-group>
 
-      <sw-input-group
-        :label="$t('settings.mail.username')"
-        :error="usernameError"
-        required
-      >
+      <sw-input-group :label="$t('settings.mail.username')">
         <sw-input
-          :invalid="$v.mailConfigData.mail_username.$error"
           v-model.trim="mailConfigData.mail_username"
           type="text"
           name="db_name"
           class="mt-2"
-          @input="$v.mailConfigData.mail_username.$touch()"
         />
       </sw-input-group>
 
-      <sw-input-group
-        :label="$t('settings.mail.password')"
-        :error="passwordError"
-        required
-      >
+      <sw-input-group :label="$t('settings.mail.password')">
         <sw-input
-          :invalid="$v.mailConfigData.mail_password.$error"
           v-model.trim="mailConfigData.mail_password"
           :type="getInputType"
           name="password"
           class="mt-2"
-          @input="$v.mailConfigData.mail_password.$touch()"
+          autocomplete="off"
+          data-lpignore="true"
         >
           <template v-slot:rightIcon>
             <eye-off-icon
@@ -82,8 +72,8 @@
         required
       >
         <sw-input
-          :invalid="$v.mailConfigData.mail_port.$error"
           v-model.trim="mailConfigData.mail_port"
+          :invalid="$v.mailConfigData.mail_port.$error"
           type="text"
           name="mail_port"
           class="mt-2"
@@ -113,11 +103,13 @@
         required
       >
         <sw-input
-          :invalid="$v.mailConfigData.from_mail.$error"
           v-model.trim="mailConfigData.from_mail"
+          :invalid="$v.mailConfigData.from_mail.$error"
           type="text"
           name="from_mail"
           class="mt-2"
+          autocomplete="off"
+          data-lpignore="true"
           @input="$v.mailConfigData.from_mail.$touch()"
         />
       </sw-input-group>
@@ -128,8 +120,8 @@
         required
       >
         <sw-input
-          :invalid="$v.mailConfigData.from_name.$error"
           v-model.trim="mailConfigData.from_name"
+          :invalid="$v.mailConfigData.from_name.$error"
           type="text"
           name="from_name"
           class="mt-2"
@@ -158,6 +150,10 @@ const { required, email, numeric } = require('vuelidate/lib/validators')
 import { EyeIcon, EyeOffIcon } from '@vue-hero-icons/outline'
 
 export default {
+  components: {
+    EyeIcon,
+    EyeOffIcon,
+  },
   props: {
     configData: {
       type: Object,
@@ -174,10 +170,6 @@ export default {
       require: true,
       default: Array,
     },
-  },
-  components: {
-    EyeIcon,
-    EyeOffIcon,
   },
   data() {
     return {
@@ -207,12 +199,6 @@ export default {
         required,
         numeric,
       },
-      mail_username: {
-        required,
-      },
-      mail_password: {
-        required,
-      },
       mail_encryption: {
         required,
       },
@@ -241,24 +227,6 @@ export default {
       }
 
       if (!this.$v.mailConfigData.mail_host.required) {
-        return this.$tc('validation.required')
-      }
-    },
-    usernameError() {
-      if (!this.$v.mailConfigData.mail_username.$error) {
-        return ''
-      }
-
-      if (!this.$v.mailConfigData.mail_username.required) {
-        return this.$tc('validation.required')
-      }
-    },
-    passwordError() {
-      if (!this.$v.mailConfigData.mail_password.$error) {
-        return ''
-      }
-
-      if (!this.$v.mailConfigData.mail_password.required) {
         return this.$tc('validation.required')
       }
     },

@@ -3,25 +3,53 @@
 return [
 
     /*
-    * Current version of the application.
+    * Minimum php version.
     */
-    'version' => '4.0.0',
+    'min_php_version' => '7.4.0',
+
+    /*
+    * Minimum mysql version.
+    */
+
+    'min_mysql_version' => '5.7.7',
+
+    /*
+    * Minimum mariadb version.
+    */
+
+    'min_mariadb_version' => '10.2.7',
+
+    /*
+    * Minimum pgsql version.
+    */
+
+    'min_pgsql_version' => '9.2.0',
+
+    /*
+    * Minimum sqlite version.
+    */
+
+    'min_sqlite_version' => '3.24.0',
 
     /*
     * List of languages supported by Crater.
     */
     'languages' => [
-        ["code"=>"ar", "name" => "Arabic"],
-        ["code"=>"nl", "name" => "Dutch"],
-        ["code"=>"en", "name" => "English"],
-        ["code"=>"fr", "name" => "French"],
-        ["code"=>"de", "name" => "German"],
-        ["code"=>"it", "name" => "Italian"],
-        ["code"=>"lv", "name" => "Latvian"],
-        ["code"=>"pt_BR", "name" => "Portuguese (Brazilian)"],
-        ["code"=>"sr", "name" => "Serbian Latin"],
-        ["code"=>"es", "name" => "Spanish"],
-        ["code"=>"sv", "name"=> "Svenska"]
+        ["code" => "ar", "name" => "Arabic"],
+        ["code" => "nl", "name" => "Dutch"],
+        ["code" => "en", "name" => "English"],
+        ["code" => "fr", "name" => "French"],
+        ["code" => "de", "name" => "German"],
+        ["code" => "ja", "name" => "Japanese"],
+        ["code" => "it", "name" => "Italian"],
+        ["code" => "lv", "name" => "Latvian"],
+        ["code" => "pt_BR", "name" => "Portuguese (Brazilian)"],
+        ["code" => "sr", "name" => "Serbian Latin"],
+        ["code" => "ko", "name" => "Korean"],
+        ["code" => "es", "name" => "Spanish"],
+        ["code" => "sv", "name" => "Svenska"],
+        ["code" => "sk", "name" => "Slovak"],
+        ["code" => "vi", "name" => "Tiếng Việt"],
     ],
 
     /*
@@ -40,5 +68,5 @@ return [
         ['key' => 'october-september', 'value' => '10-9'],
         ['key' => 'november-october' , 'value' => '11-10'],
         ['key' => 'december-november', 'value' => '12-11'],
-    ]
+    ],
 ];

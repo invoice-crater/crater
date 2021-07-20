@@ -1,15 +1,14 @@
 <?php
+
 namespace Crater\Models;
 
-use Crater\Models\Item;
-use Crater\Models\Estimate;
-use Crater\Models\Tax;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class EstimateItem extends Model
 {
     use HasFactory;
+
     protected $fillable = [
         'estimate_id',
         'name',
@@ -22,7 +21,8 @@ class EstimateItem extends Model
         'discount_val',
         'tax',
         'total',
-        'discount'
+        'discount',
+        'unit_name',
     ];
 
     protected $casts = [
@@ -31,7 +31,7 @@ class EstimateItem extends Model
         'discount' => 'float',
         'quantity' => 'float',
         'discount_val' => 'integer',
-        'tax' => 'integer'
+        'tax' => 'integer',
     ];
 
     public function estimate()

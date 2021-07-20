@@ -1,17 +1,15 @@
 <?php
 
-use Illuminate\Database\Migrations\Migration;
-use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\Schema;
 use Crater\Models\CompanySetting;
 use Crater\Models\Estimate;
 use Crater\Models\Expense;
+use Crater\Models\FileDisk;
 use Crater\Models\Invoice;
 use Crater\Models\Item;
 use Crater\Models\Payment;
 use Crater\Models\Setting;
-use Crater\Models\FileDisk;
 use Crater\Models\User;
+use Illuminate\Database\Migrations\Migration;
 
 class UpdateCraterVersion400 extends Migration
 {
@@ -31,7 +29,7 @@ class UpdateCraterVersion400 extends Migration
 
         if ($user && $user->role == 'admin') {
             $user->update([
-                'role' => 'super admin'
+                'role' => 'super admin',
             ]);
 
             // Update language
@@ -74,22 +72,22 @@ class UpdateCraterVersion400 extends Migration
         $publicDisk = [
             'driver' => 'local',
             'root' => storage_path('app/public'),
-            'url' => env('APP_URL') . '/storage',
+            'url' => env('APP_URL').'/storage',
             'visibility' => 'public',
         ];
 
         FileDisk::create([
             'credentials' => json_encode($publicDisk),
-            'name'=> 'local_public',
-            'type'=> 'SYSTEM',
+            'name' => 'local_public',
+            'type' => 'SYSTEM',
             'driver' => 'local',
             'set_as_default' => false,
         ]);
 
         FileDisk::create([
             'credentials' => json_encode($privateDisk),
-            'name'=> 'local_private',
-            'type'=> 'SYSTEM',
+            'name' => 'local_private',
+            'type' => 'SYSTEM',
             'driver' => 'local',
             'set_as_default' => true,
         ]);
@@ -107,9 +105,9 @@ class UpdateCraterVersion400 extends Migration
 
     private function updateCompanySettings($user)
     {
-        $defaultInvoiceEmailBody = 'You have received a new invoice from <b>{COMPANY_NAME}</b>.</br>Please download using the button below:';
-        $defaultEstimateEmailBody = 'You have received a new estimate from <b>{COMPANY_NAME}</b>.</br>Please download using the button below:';
-        $defaultPaymentEmailBody = 'Thank you for the payment.</b></br>Please download your payment receipt using the button below:';
+        $defaultInvoiceEmailBody = 'You have received a new invoice from <b>{COMPANY_NAME}</b>.</br> Please download using the button below:';
+        $defaultEstimateEmailBody = 'You have received a new estimate from <b>{COMPANY_NAME}</b>.</br> Please download using the button below:';
+        $defaultPaymentEmailBody = 'Thank you for the payment.</b></br> Please download your payment receipt using the button below:';
         $billingAddressFormat = '<h3>{BILLING_ADDRESS_NAME}</h3><p>{BILLING_ADDRESS_STREET_1}</p><p>{BILLING_ADDRESS_STREET_2}</p><p>{BILLING_CITY}  {BILLING_STATE}</p><p>{BILLING_COUNTRY}  {BILLING_ZIP_CODE}</p><p>{BILLING_PHONE}</p>';
         $shippingAddressFormat = '<h3>{SHIPPING_ADDRESS_NAME}</h3><p>{SHIPPING_ADDRESS_STREET_1}</p><p>{SHIPPING_ADDRESS_STREET_2}</p><p>{SHIPPING_CITY}  {SHIPPING_STATE}</p><p>{SHIPPING_COUNTRY}  {SHIPPING_ZIP_CODE}</p><p>{SHIPPING_PHONE}</p>';
         $companyAddressFormat = '<h3><strong>{COMPANY_NAME}</strong></h3><p>{COMPANY_ADDRESS_STREET_1}</p><p>{COMPANY_ADDRESS_STREET_2}</p><p>{COMPANY_CITY} {COMPANY_STATE}</p><p>{COMPANY_COUNTRY}  {COMPANY_ZIP_CODE}</p><p>{COMPANY_PHONE}</p>';
@@ -130,7 +128,7 @@ class UpdateCraterVersion400 extends Migration
             'estimate_shipping_address_format' => $shippingAddressFormat,
             'estimate_billing_address_format' => $billingAddressFormat,
             'payment_company_address_format' => $companyAddressFormat,
-            'payment_from_customer_address_format' => $paymentFromCustomerAddress
+            'payment_from_customer_address_format' => $paymentFromCustomerAddress,
         ];
 
         CompanySetting::setSettings($settings, $user->company_id);

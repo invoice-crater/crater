@@ -1,9 +1,9 @@
 <?php
 
-use Crater\Models\User;
-use Crater\Models\Tax;
 use Crater\Models\Invoice;
 use Crater\Models\InvoiceItem;
+use Crater\Models\Tax;
+use Crater\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Artisan;
 use Laravel\Sanctum\Sanctum;
@@ -52,12 +52,6 @@ test('invoice belongs to user', function () {
     $invoice = Invoice::factory()->forUser()->create();
 
     $this->assertTrue($invoice->user()->exists());
-});
-
-test('invoice belongs to invoice template', function () {
-    $invoice = Invoice::factory()->forInvoiceTemplate()->create();
-
-    $this->assertTrue($invoice->invoiceTemplate()->exists());
 });
 
 test('get next invoice number', function () {
@@ -113,11 +107,11 @@ test('create invoice', function () {
     $invoice['taxes'] = [];
     array_push($invoice['taxes'], Tax::factory()->raw());
 
-    $request = new Request;
+    $request = new Request();
 
     $request->replace($invoice);
 
-    $invoice_number = explode("-",$invoice['invoice_number']);
+    $invoice_number = explode("-", $invoice['invoice_number']);
     $number_attributes['invoice_number'] = $invoice_number[0].'-'.sprintf('%06d', intval($invoice_number[1]));
 
     $response = Invoice::createInvoice($request);
@@ -140,7 +134,7 @@ test('create invoice', function () {
         'discount' => $invoice['discount'],
         'notes' => $invoice['notes'],
         'user_id' => $invoice['user_id'],
-        'invoice_template_id' => $invoice['invoice_template_id'],
+        'template_name' => $invoice['template_name'],
     ]);
 });
 
@@ -150,11 +144,11 @@ test('update invoice', function () {
     $newInvoice = Invoice::factory()->raw();
 
     $item = InvoiceItem::factory()->raw([
-        'invoice_id' => $invoice->id
+        'invoice_id' => $invoice->id,
     ]);
 
     $tax = Tax::factory()->raw([
-        'invoice_id' => $invoice->id
+        'invoice_id' => $invoice->id,
     ]);
 
     $newInvoice['items'] = [];
@@ -163,7 +157,7 @@ test('update invoice', function () {
     array_push($newInvoice['items'], $item);
     array_push($newInvoice['taxes'], $tax);
 
-    $request = new Request;
+    $request = new Request();
 
     $request->replace($newInvoice);
 
@@ -191,7 +185,7 @@ test('update invoice', function () {
         'discount' => $newInvoice['discount'],
         'notes' => $newInvoice['notes'],
         'user_id' => $newInvoice['user_id'],
-        'invoice_template_id' => $newInvoice['invoice_template_id'],
+        'template_name' => $newInvoice['template_name'],
     ]);
 });
 
@@ -201,12 +195,12 @@ test('create items', function () {
     $items = [];
 
     $item = InvoiceItem::factory()->raw([
-        'invoice_id' => $invoice->id
+        'invoice_id' => $invoice->id,
     ]);
 
     array_push($items, $item);
 
-    $request = new Request;
+    $request = new Request();
 
     $request->replace(['items' => $items ]);
 
@@ -218,7 +212,7 @@ test('create items', function () {
         'price' => $item['price'],
         'tax' => $item['tax'],
         'quantity' => $item['quantity'],
-        'total' => $item['total']
+        'total' => $item['total'],
     ]);
 });
 
@@ -228,12 +222,12 @@ test('create taxes', function () {
     $taxes = [];
 
     $tax = Tax::factory()->raw([
-        'invoice_id' => $invoice->id
+        'invoice_id' => $invoice->id,
     ]);
 
     array_push($taxes, $tax);
 
-    $request = new Request;
+    $request = new Request();
 
     $request->replace(['taxes' => $taxes ]);
 
