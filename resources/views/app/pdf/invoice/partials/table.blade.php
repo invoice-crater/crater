@@ -15,16 +15,13 @@
         @endif
         <th class="text-right item-table-heading">@lang('pdf_amount_label')</th>
     </tr>
-    @php
-        $index = 1
-    @endphp
     @foreach ($invoice->items as $item)
         <tr class="item-row">
             <td
                 class="pr-20 text-right item-cell"
                 style="vertical-align: top;"
             >
-                {{$index}}
+                {{ $loop->iteration }}
             </td>
             <td
                 class="pl-0 text-left item-cell"
@@ -81,16 +78,13 @@
                 {!! format_money_pdf($item->total, $invoice->customer->currency) !!}
             </td>
         </tr>
-        @php
-            $index += 1
-        @endphp
     @endforeach
 </table>
 
 <hr class="item-cell-table-hr">
 
-<div class="total-display-container">
-    <table width="100%" cellspacing="0px" border="0" class="total-display-table @if(count($invoice->items) > 12) page-break @endif">
+<div class="total-display-container" style="width:50%;">
+    <table width="70%" cellspacing="0px" border="0" class="total-display-table @if(count($invoice->items) > 12) page-break @endif">
         <tr>
             <td class="border-0 total-table-attribute-label">@lang('pdf_subtotal')</td>
             <td class="py-2 border-0 item-cell total-table-attribute-value">
@@ -160,40 +154,5 @@
                 {!! format_money_pdf($invoice->total, $invoice->customer->currency)!!}
             </td>
         </tr>
-    
-        <tr>
-            <td style="padding:3px 0px"></td>
-            <td style="padding:3px 0px"></td>
-        </tr>
-
-        @if ($invoice->display_due_amount)
-            <tr>
-                <td colspan="2" style="padding-top: 20px;"><hr/></td>
-            </tr>
-            <tr>
-                <td class="border-0 total-table-attribute-label">
-                    <label class="total-bottom"> Paid so far </label>
-                </td>
-                <td
-                    class="border-0 py-8 total-table-attribute-value text-primary"
-                    style="color: green"
-                >
-                    {!! format_money_pdf($invoice->total - $invoice->due_amount, $invoice->user->currency)!!}
-                </td>
-            </tr>
-
-            <tr>
-                <td class="border-0 total-border-left total-table-attribute-label">
-                    Remaining
-                </td>
-                <td
-                    class="border-0 total-border-right item-cell py-8 total-table-attribute-value text-primary"
-                    style="color: rgb(247, 67, 67)"
-                >
-                    {!! format_money_pdf($invoice->due_amount, $invoice->user->currency)!!}
-                </td>
-            </tr>
-        @endif
-
     </table>
 </div>

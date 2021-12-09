@@ -4,7 +4,7 @@
       <div class="loader-spined">
         <div class="loader--icon">
           <svg
-            class="offset-45deg text-primary-500"
+            class="offset-45deg theme-color"
             width="27"
             height="27"
             viewBox="0 0 27 27"
@@ -19,15 +19,15 @@
         </div>
       </div>
 
-      <div class="pufs text-primary-500">
-        <i class="text-primary-500"></i><i></i><i></i> <i></i><i></i><i></i>
+      <div class="pufs theme-color">
+        <i class="theme-color"></i><i></i><i></i> <i></i><i></i><i></i>
         <i></i><i></i><i></i> <i></i><i></i><i></i> <i></i><i></i><i></i> <i></i
         ><i></i><i></i> <i></i><i></i><i></i> <i></i><i></i><i></i> <i></i
         ><i></i><i></i> <i></i><i></i><i></i> <i></i><i></i><i></i> <i></i
         ><i></i><i></i> <i></i><i></i><i></i> <i></i><i></i><i></i> <i></i
         ><i></i><i></i>
       </div>
-      <div class="particles text-primary-500">
+      <div class="particles theme-color">
         <i></i><i></i><i></i> <i></i><i></i><i></i> <i></i><i></i><i></i> <i></i
         ><i></i><i></i> <i></i><i></i><i></i> <i></i><i></i><i></i> <i></i
         ><i></i><i></i> <i></i><i></i><i></i> <i></i><i></i><i></i> <i></i
@@ -35,7 +35,7 @@
         ><i></i><i></i> <i></i><i></i><i></i> <i></i><i></i><i></i>
       </div>
       <img
-        src="/img/crater-logo.png"
+        src="/logos/logo-icon.png"
         class="
           absolute
           block
@@ -44,11 +44,11 @@
           transform
           -translate-x-1/2 -translate-y-1/2
           w-28
-          text-primary-400
+          theme-color
           top-1/2
           left-1/2
         "
-        alt="Crater Logo"
+        alt="Logo"
       />
     </div>
   </div>

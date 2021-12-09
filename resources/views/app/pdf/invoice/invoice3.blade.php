@@ -190,7 +190,7 @@
             page-break-inside: avoid;
             page-break-before: auto;
             page-break-after: auto;
-            margin-left: 500px;
+            margin-left: 450px;
             margin-top: 20px;
         }
 
@@ -306,7 +306,7 @@
 
 <body>
     <div class="header-container">
-        <table width="100%">
+        <table width="92%">
             <tr>
                 <td width="50%" class="header-section-left">
                     @if($logo)

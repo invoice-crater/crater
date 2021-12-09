@@ -17,98 +17,96 @@ class CreateBouncerTables extends Migration
     {
         Schema::disableForeignKeyConstraints();
 
-        if (Schema::hasTable('roles')) {
-            Schema::drop(Models::table('roles'));
+        Schema::dropIfExists('roles');
+        Schema::dropIfExists('permissions');
+        Schema::dropIfExists('model_has_permissions');
+        Schema::dropIfExists('model_has_roles');
+        Schema::dropIfExists('role_has_permissions');
+        Schema::dropIfExists('permissions');
+
+        try {
+            Schema::create(Models::table('abilities'), function (Blueprint $table) {
+                $table->bigIncrements('id');
+                $table->string('name');
+                $table->string('title')->nullable();
+                $table->bigInteger('entity_id')->unsigned()->nullable();
+                $table->string('entity_type')->nullable();
+                $table->boolean('only_owned')->default(false);
+                $table->json('options')->nullable();
+                $table->integer('scope')->nullable()->index();
+                $table->timestamps();
+            });
+        } catch (\Exception $e) {
+            echo $e->getMessage();
         }
 
-        if (Schema::hasTable('permissions')) {
-            Schema::drop(Models::table('permissions'));
+        try {
+            Schema::create(Models::table('roles'), function (Blueprint $table) {
+                $table->bigIncrements('id');
+                $table->string('name');
+                $table->string('title')->nullable();
+                $table->integer('level')->unsigned()->nullable();
+                $table->integer('scope')->nullable()->index();
+                $table->timestamps();
+
+                $table->unique(
+                    ['name', 'scope'],
+                    'roles_name_unique'
+                );
+            });
+        } catch (\Exception $e) {
+            echo $e->getMessage();
         }
 
-        if (Schema::hasTable('model_has_permissions')) {
-            Schema::drop(Models::table('model_has_permissions'));
-        }
+        try {
+            Schema::create(Models::table('assigned_roles'), function (Blueprint $table) {
+                $table->bigIncrements('id');
+                $table->bigInteger('role_id')->unsigned()->index();
+                $table->bigInteger('entity_id')->unsigned();
+                $table->string('entity_type');
+                $table->bigInteger('restricted_to_id')->unsigned()->nullable();
+                $table->string('restricted_to_type')->nullable();
+                $table->integer('scope')->nullable()->index();
 
-        if (Schema::hasTable('model_has_roles')) {
-            Schema::drop('model_has_roles');
-        }
+                $table->index(
+                    ['entity_id', 'entity_type', 'scope'],
+                    'assigned_roles_entity_index'
+                );
 
-        if (Schema::hasTable('model_has_permissions')) {
-            Schema::drop('model_has_permissions');
-        }
+                $table->foreign('role_id')
+                    ->references('id')->on(Models::table('roles'))
+                    ->onUpdate('cascade')->onDelete('cascade');
+                });
+            } catch (\Exception $e) {
+                echo $e->getMessage();
+            }
 
-        if (Schema::hasTable('permissions')) {
-            Schema::drop('permissions');
-        }
+        try {
 
-        if (Schema::hasTable('roles')) {
-            Schema::drop('roles');
+            Schema::create(Models::table('permissions'), function (Blueprint $table) {
+                $table->bigIncrements('id');
+                $table->bigInteger('ability_id')->unsigned()->index();
+                $table->bigInteger('entity_id')->unsigned()->nullable();
+                $table->string('entity_type')->nullable();
+                $table->boolean('forbidden')->default(false);
+                $table->integer('scope')->nullable()->index();
+
+                $table->index(
+                    ['entity_id', 'entity_type', 'scope'],
+                    'permissions_entity_index'
+                );
+
+                $table->foreign('ability_id')
+                    ->references('id')->on(Models::table('abilities'))
+                    ->onUpdate('cascade')->onDelete('cascade');
+            });
+
+        } catch (\Exception $e) {
+            echo $e->getMessage();
         }
 
         Schema::enableForeignKeyConstraints();
 
-        Schema::create(Models::table('abilities'), function (Blueprint $table) {
-            $table->bigIncrements('id');
-            $table->string('name');
-            $table->string('title')->nullable();
-            $table->bigInteger('entity_id')->unsigned()->nullable();
-            $table->string('entity_type')->nullable();
-            $table->boolean('only_owned')->default(false);
-            $table->json('options')->nullable();
-            $table->integer('scope')->nullable()->index();
-            $table->timestamps();
-        });
-
-        Schema::create(Models::table('roles'), function (Blueprint $table) {
-            $table->bigIncrements('id');
-            $table->string('name');
-            $table->string('title')->nullable();
-            $table->integer('level')->unsigned()->nullable();
-            $table->integer('scope')->nullable()->index();
-            $table->timestamps();
-
-            $table->unique(
-                ['name', 'scope'],
-                'roles_name_unique'
-            );
-        });
-
-        Schema::create(Models::table('assigned_roles'), function (Blueprint $table) {
-            $table->bigIncrements('id');
-            $table->bigInteger('role_id')->unsigned()->index();
-            $table->bigInteger('entity_id')->unsigned();
-            $table->string('entity_type');
-            $table->bigInteger('restricted_to_id')->unsigned()->nullable();
-            $table->string('restricted_to_type')->nullable();
-            $table->integer('scope')->nullable()->index();
-
-            $table->index(
-                ['entity_id', 'entity_type', 'scope'],
-                'assigned_roles_entity_index'
-            );
-
-            $table->foreign('role_id')
-                  ->references('id')->on(Models::table('roles'))
-                  ->onUpdate('cascade')->onDelete('cascade');
-        });
-
-        Schema::create(Models::table('permissions'), function (Blueprint $table) {
-            $table->bigIncrements('id');
-            $table->bigInteger('ability_id')->unsigned()->index();
-            $table->bigInteger('entity_id')->unsigned()->nullable();
-            $table->string('entity_type')->nullable();
-            $table->boolean('forbidden')->default(false);
-            $table->integer('scope')->nullable()->index();
-
-            $table->index(
-                ['entity_id', 'entity_type', 'scope'],
-                'permissions_entity_index'
-            );
-
-            $table->foreign('ability_id')
-                  ->references('id')->on(Models::table('abilities'))
-                  ->onUpdate('cascade')->onDelete('cascade');
-        });
     }
 
     /**

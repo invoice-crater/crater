@@ -8,8 +8,8 @@
     >
       <img
         id="logo-white"
-        src="/img/logo-white.png"
-        alt="Crater Logo"
+        src="/logos/logo.png"
+        alt="Logo"
         class="h-6"
       />
     </router-link>

@@ -259,7 +259,7 @@
             page-break-inside: avoid;
             page-break-before: auto;
             page-break-after: auto;
-            margin-left: 500px;
+            margin-left: 450px;
             border: 1px solid #EAF1FB;
             border-top: none;
         }
