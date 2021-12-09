@@ -11,6 +11,7 @@ Homestead.yaml
 .rnd
 /.expo
 /.vscode
+<<<<<<< HEAD
 docker-compose.yml
 docker-compose.yaml
 
@@ -19,4 +20,6 @@ public/.DS_Store
 public/assets/.DS_Store
 public/assets/img/.DS_Store
 public/logos/.DS_Store
+=======
+>>>>>>> 082d5ca
 /docker-compose/db/data/
