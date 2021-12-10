@@ -190,7 +190,7 @@
             page-break-inside: avoid;
             page-break-before: auto;
             page-break-after: auto;
-            margin-left: 500px;
+            margin-left: 450px;
             margin-top: 20px;
         }
 
@@ -306,13 +306,13 @@
 
 <body>
     <div class="header-container">
-        <table width="100%">
+        <table width="92%">
             <tr>
                 <td width="50%" class="header-section-left">
                     @if($logo)
                     <img class="header-logo" src="{{ $logo }}" alt="Company Logo">
                     @else
-                    <h1 class="header-logo"> {{$invoice->user->company->name}} </h1>
+                    <h1 class="header-logo"> {{$invoice->customer->company->name}} </h1>
                     @endif
                 </td>
                 <td width="50%" class="text-right company-address-container company-address">

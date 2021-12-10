@@ -218,7 +218,7 @@
             page-break-inside: avoid;
             page-break-before: auto;
             page-break-after: auto;
-            margin-left: 500px;
+            margin-left: 450px;
             margin-top: 20px;
         }
 
@@ -341,8 +341,8 @@
                     @if($logo)
                         <img class="header-logo" src="{{ $logo }}" alt="Company Logo">
                     @else
-                        @if($invoice->user->company)
-                            <h2 class="header-logo"> {{$invoice->user->company->name}} </h2>
+                        @if($invoice->customer->company)
+                            <h2 class="header-logo"> {{$invoice->customer->company->name}} </h2>
                         @endif
                     @endif
                 </td>
