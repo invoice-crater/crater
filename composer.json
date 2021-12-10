@@ -34,7 +34,6 @@
         "vinkla/hashids": "^9.0"
     },
     "require-dev": {
-        "barryvdh/laravel-debugbar": "^3.6",
         "barryvdh/laravel-ide-helper": "^2.6",
         "beyondcode/laravel-dump-server": "^1.0",
         "facade/ignition": "^2.3.6",
