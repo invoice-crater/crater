@@ -4,7 +4,7 @@
       grid
       h-screen h-screen-ios
       grid-cols-12
-      overflow-y-hidden
+      overflow-y-auto
       bg-gray-100
     "
   >
@@ -29,9 +29,9 @@
     >
       <div class="w-full">
         <img
-          src="/img/crater-logo.png"
+          src="/logos/logo-icon.png"
           class="block w-48 h-auto max-w-full mb-32 text-primary-400"
-          alt="Crater Logo"
+          alt="Logo"
         />
 
         <router-view />
@@ -49,7 +49,7 @@
           "
         >
           <p class="mb-3">
-            Copyright @ Crater Invoice, Inc. {{ new Date().getFullYear() }}
+            Copyright &copy; AceLords, Inc. {{ new Date().getFullYear() }}
           </p>
         </div>
       </div>
@@ -101,7 +101,7 @@
             lg:block
           "
         >
-          Crater helps you track expenses, record payments & generate beautiful
+          AceLords Invoicing WebApp helps you track expenses, record payments & generate beautiful
           <br />
           invoices & estimates. <br />
         </p>
@@ -117,17 +117,17 @@ import NotificationRoot from '@/scripts/components/notifications/NotificationRoo
 
 <style lang="scss" scoped>
 .content-box {
-  background-image: url('/img/login/login-vector1.svg');
+  background-image: url('/build/img/login/login-vector1.svg');
 }
 .content-bottom {
-  background-image: url('/img/login/login-vector3.svg');
+  background-image: url('/build/img/login/login-vector3.svg');
   background-size: 100% 100%;
   height: 300px;
   right: 32%;
   bottom: 0;
 }
 .content-box::before {
-  background-image: url('/img/login/frame.svg');
+  background-image: url('/build/img/login/frame.svg');
   content: '';
   background-size: 100% 100%;
   background-repeat: no-repeat;
@@ -139,7 +139,7 @@ import NotificationRoot from '@/scripts/components/notifications/NotificationRoo
   z-index: 1;
 }
 .content-box::after {
-  background-image: url('/img/login/login-vector2.svg');
+  background-image: url('/build/img/login/login-vector2.svg');
   content: '';
   background-size: cover;
   background-repeat: no-repeat;

@@ -9,7 +9,7 @@
           <img
             src="/logos/logo-icon.png"
             class="block w-48 h-auto max-w-full mb-32 text-primary-400"
-            alt="Crater Logo"
+            alt="Logo"
           />
         </a>
         <router-view></router-view>
