@@ -1,8 +1,16 @@
+<<<<<<< HEAD:public/build/assets/DragIcon.d9852e02.js
 <<<<<<<< HEAD:public/build/assets/DragIcon.d9852e02.js
 import{aU as $r,aV as Br,aQ as Kr,aW as Hr,o as Wr,e as Xr,h as Yr}from"./vendor.dde0d540.js";import{_ as Vr}from"./main.070de914.js";var gr={exports:{}};/**!
 ========
 import{aU as $r,aV as Br,aQ as Kr,aW as Hr,o as Wr,e as Xr,h as Yr}from"./vendor.451c1a79.js";import{_ as Vr}from"./main.d7794df3.js";var gr={exports:{}};/**!
 >>>>>>>> 0d401f0b (feat: allow negative taxes):public/build/assets/DragIcon.b37a719a.js
+=======
+<<<<<<<< HEAD:public/build/assets/DragIcon.b37a719a.js
+import{aU as $r,aV as Br,aQ as Kr,aW as Hr,o as Wr,e as Xr,h as Yr}from"./vendor.451c1a79.js";import{_ as Vr}from"./main.d7794df3.js";var gr={exports:{}};/**!
+========
+import{aU as $r,aV as Br,aQ as Kr,aW as Hr,o as Wr,e as Xr,h as Yr}from"./vendor.dde0d540.js";import{_ as Vr}from"./main.070de914.js";var gr={exports:{}};/**!
+>>>>>>>> 7c3e4c26 (Fix asset paths):public/build/assets/DragIcon.d9852e02.js
+>>>>>>> b112057e (Fix asset paths):public/build/assets/DragIcon.b37a719a.js
  * Sortable 1.14.0
  * @author	RubaXa   <trash@rubaxa.org>
  * @author	owenm    <owen23355@gmail.com>
