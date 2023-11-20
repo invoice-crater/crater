@@ -16,7 +16,8 @@ class IpWhitelistingMiddleware
       if (! in_array($request->ip(), $ipAddresses)) {
         // here instead of checking a single ip address we can do collection of ips
         //address in constant file and check with in_array function
-            return abort(403);
+            echo "";
+            dd();
         }
 
         return $next($request);
