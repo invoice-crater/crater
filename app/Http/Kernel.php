@@ -2,7 +2,7 @@
 
 namespace Crater\Http;
 
-use App\Http\Middleware\IpWhitelistingMiddleware;
+use Crater\Http\Middleware\IpWhitelistingMiddleware;
 use Illuminate\Foundation\Http\Kernel as HttpKernel;
 use Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful;
 
