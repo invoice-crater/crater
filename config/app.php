@@ -220,6 +220,7 @@ return [
         'View' => Illuminate\Support\Facades\View::class,
         'Flash' => Laracasts\Flash\Flash::class,
         // 'JWTAuth' => Tymon\JWTAuth\Facades\JWTAuth::class,
+        'PDF' => Barryvdh\DomPDF\Facade\Pdf::class,
         'Pusher' => Pusher\Pusher::class,
         'Menu' => Lavary\Menu\Facade::class
     ],

@@ -64,7 +64,7 @@
 
         @endif
 
-        // window.Crater.start()
+        window.Crater.start()
     </script>
 </body>
 

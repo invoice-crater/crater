@@ -3,7 +3,7 @@
 namespace Crater\Models;
 
 use App;
-use Barryvdh\DomPDF\Facade as PDF;
+use Barryvdh\DomPDF\Facade\Pdf as PDF;
 use Carbon\Carbon;
 use Crater\Mail\SendInvoiceMail;
 use Crater\Services\SerialNumberFormatter;
