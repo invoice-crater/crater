@@ -20,9 +20,14 @@ Web Application is made using Laravel & VueJS while the Mobile Apps are built us
 ## Documentation
 
 - [Installation Steps](https://docs.craterapp.com/installation.html)
+  (also see contributing.md)
 - [User Guide](https://docs.craterapp.com/)
 - [Developer Guide](https://docs.craterapp.com/developer-guide.html)
+  (also see contributing.md)
 - [API Documentation](https://api-docs.craterapp.com)
+
+## Contributing
+see [contributing.md](.github/contributing.md)
 
 ## Download
 
