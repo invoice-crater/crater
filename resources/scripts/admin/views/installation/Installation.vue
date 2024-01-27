@@ -3,7 +3,7 @@
     <LightDarkButton class="absolute z-10 top-2 right-2"/>
     <img
       id="logo-crater"
-      src="/img/crater-logo.png"
+      src="#"
       alt="Crater Logo"
       class="h-12 mb-5 md:mb-10"
     />
