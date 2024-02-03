@@ -39,10 +39,10 @@ see [contributing.md](.github/contributing.md)
 - [IOS](https://apps.apple.com/app/id1489169767)
 - [Source](https://github.com/bytefury/crater-mobile)
 
-## Discord
+## Discord (new link!)
 
 Join the Crater discord server to discuss:
-[Invite Link](https://discord.gg/nyTstm6)
+[Invite Link](https://discord.gg/5kCKBumdjM)
 
 ## Roadmap
 
