@@ -1,5 +1,7 @@
 /Modules
 /node_modules
+/public/build/assets/
+/public/build/manifest.json
 /public/storage
 /public/hot
 /storage/*.key
@@ -8,6 +10,7 @@
 Homestead.json
 Homestead.yaml
 .env
+.php-cs-fixer.cache
 .phpunit.result.cache
 .rnd
 /.expo
