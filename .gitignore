@@ -1,5 +1,6 @@
 /Modules
 /node_modules
+/public/build/assets/
 /public/storage
 /public/hot
 /storage/*.key
