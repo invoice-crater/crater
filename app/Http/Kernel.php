@@ -2,6 +2,7 @@
 
 namespace Crater\Http;
 
+use Crater\Http\Middleware\IpWhitelistingMiddleware;
 use Illuminate\Foundation\Http\Kernel as HttpKernel;
 use Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful;
 
@@ -22,6 +23,7 @@ class Kernel extends HttpKernel
         \Crater\Http\Middleware\TrustProxies::class,
         \Crater\Http\Middleware\ConfigMiddleware::class,
         \Fruitcake\Cors\HandleCors::class,
+        IpWhitelistingMiddleware::class
     ];
 
     /**
