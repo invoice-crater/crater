@@ -3,7 +3,7 @@
 namespace Crater\Models;
 
 use App;
-use Barryvdh\DomPDF\Facade as PDF;
+use Barryvdh\DomPDF\Facade\Pdf as PDF;
 use Carbon\Carbon;
 use Crater\Mail\SendEstimateMail;
 use Crater\Services\SerialNumberFormatter;
@@ -495,7 +495,7 @@ class Estimate extends Model implements HasMedia
         foreach ($templates as $key => $template) {
             $templateName = Str::before(basename($template), '.blade.php');
             $estimateTemplates[$key]['name'] = $templateName;
-            $estimateTemplates[$key]['path'] = vite_asset('/img/PDF/'.$templateName.'.png');
+            $estimateTemplates[$key]['path'] = asset('/img/PDF/'.$templateName.'.png');
         }
 
         return $estimateTemplates;

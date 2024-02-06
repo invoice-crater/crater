@@ -2,7 +2,7 @@
 
 namespace Crater\Models;
 
-use Barryvdh\DomPDF\Facade as PDF;
+use Barryvdh\DomPDF\Facade\Pdf as PDF;
 use Carbon\Carbon;
 use Crater\Jobs\GeneratePaymentPdfJob;
 use Crater\Mail\SendPaymentMail;
