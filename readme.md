@@ -1,3 +1,7 @@
+# Archived in favour of InvoiceShelf
+
+As attempt at this fork has been abondoned in fovaour of InvoiceShelf we recommend all future contributions to be to [InvoiceShelf](https://github.com/InvoiceShelf)
+
 <img src="https://res.cloudinary.com/bytefury/image/upload/v1574149856/Crater/craterframe.png">
 
 ## Introduction
